@@ -1,0 +1,59 @@
+from pydantic import BaseModel, field_validator
+from datetime import datetime
+from typing import Optional
+
+VALID_DOMAINS = ["Supply Chain", "Procurement", "Finance", "Healthcare", "Logistics", "Manufacturing", "Energy", "Other"]
+
+class OntologyCreate(BaseModel):
+    name: str
+    domain: str
+    description: Optional[str] = None
+    build_mode: Optional[str] = "simple_llm"
+    data_class: Optional[str] = None
+
+    @field_validator("domain")
+    @classmethod
+    def validate_domain(cls, v):
+        if v not in VALID_DOMAINS:
+            raise ValueError(f"domain must be one of {VALID_DOMAINS}")
+        return v
+
+class OntologyUpdate(BaseModel):
+    name: Optional[str] = None
+    domain: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[str] = None
+    version: Optional[str] = None
+    build_mode: Optional[str] = None
+    data_class: Optional[str] = None
+
+class OntologyOut(BaseModel):
+    id: str
+    name: str
+    domain: str
+    description: Optional[str]
+    version: str
+    status: str
+    build_mode: Optional[str] = "simple_llm"
+    data_class: str = "regular"
+    current_revision_id: Optional[str] = None
+    created_by: str
+    created_at: datetime
+    updated_at: datetime
+    model_config = {"from_attributes": True}
+
+class OntologyListItem(BaseModel):
+    id: str
+    name: str
+    domain: str
+    version: str
+    status: str
+    build_mode: Optional[str] = "simple_llm"
+    data_class: str = "regular"
+    current_revision_id: Optional[str] = None
+    entity_count: int = 0
+    relation_count: int = 0
+    created_by: str
+    created_at: datetime
+    updated_at: datetime
+    model_config = {"from_attributes": True}

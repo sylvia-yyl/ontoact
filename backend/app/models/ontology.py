@@ -1,0 +1,26 @@
+import uuid
+from datetime import datetime, timezone
+from sqlalchemy import String, DateTime, ForeignKey, Text
+from sqlalchemy.orm import Mapped, mapped_column
+from app.database import Base
+
+class OntologyProject(Base):
+    __tablename__ = "ontology_projects"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    domain: Mapped[str] = mapped_column(String(100), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=True)
+    version: Mapped[str] = mapped_column(String(20), default="v0.1")
+    current_revision_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    # Published dynamic data-model projection.  Kept nullable so legacy
+    # ontologies continue to resolve their original graph namespace.
+    current_data_snapshot_id: Mapped[str | None] = mapped_column(String, nullable=True, index=True)
+    status: Mapped[str] = mapped_column(String(20), default="draft")
+    build_mode: Mapped[str] = mapped_column(String(30), default="simple_llm", nullable=True)
+    # Build mode describes a UI implementation; data class is the compatibility
+    # boundary for revisions and must not be inferred from a display name.
+    data_class: Mapped[str] = mapped_column(String(30), default="regular", nullable=False)
+    created_by: Mapped[str] = mapped_column(String, ForeignKey("users.id"), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
