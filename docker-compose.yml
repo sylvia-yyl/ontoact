@@ -1,0 +1,84 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ontoact
+      POSTGRES_USER: ontoact
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?run scripts/bootstrap.sh first}
+    volumes: [pg_data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ontoact"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  falkordb:
+    image: falkordb/falkordb:v4.20.1
+    volumes: [falkordb_data:/var/lib/falkordb/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "PING"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # User Functions run here, never inside the backend: no network beyond the
+  # backend, read-only filesystem, no capabilities.
+  function-runner:
+    build: ./function_runner
+    environment:
+      FUNCTION_RUNNER_TOKEN: ${FUNCTION_RUNNER_TOKEN:?run scripts/bootstrap.sh first}
+    networks: [functions]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 64
+    mem_limit: 3g
+
+  backend:
+    build: ./backend
+    ports: ["127.0.0.1:8000:8000"]
+    environment:
+      DATABASE_URL: postgresql://ontoact:${POSTGRES_PASSWORD}@db:5432/ontoact
+      SECRET_KEY: ${SECRET_KEY:?run scripts/bootstrap.sh first}
+      FIRST_ADMIN_USER: ${FIRST_ADMIN_USER:-planner}
+      FIRST_ADMIN_PASSWORD: ${FIRST_ADMIN_PASSWORD:?run scripts/bootstrap.sh first}
+      REVIEWER_USER: ${REVIEWER_USER:-reviewer}
+      REVIEWER_PASSWORD: ${REVIEWER_PASSWORD:-}
+      FALKORDB_HOST: falkordb
+      FALKORDB_PORT: 6379
+      FUNCTION_RUNNER_URL: http://function-runner:8100
+      FUNCTION_RUNNER_TOKEN: ${FUNCTION_RUNNER_TOKEN}
+      DEMO_CASES_DIR: /demo_cases
+      ONTOACT_API: http://localhost:8000
+      # Explanations call an OpenAI-compatible API; without a key the Explain button reports that it is not configured.
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      EXPLANATION_MODEL: ${EXPLANATION_MODEL:-gpt-4.1}
+    volumes: [./demo_cases:/demo_cases:ro]
+    depends_on:
+      db: {condition: service_healthy}
+      falkordb: {condition: service_healthy}
+      function-runner: {condition: service_started}
+    networks: [default, functions]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import json,urllib.request; x=json.load(urllib.request.urlopen('http://127.0.0.1:8000/api/health',timeout=3)); raise SystemExit(0 if x.get('graph') == 'ok' else 1)"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  frontend:
+    build: ./frontend
+    ports: ["127.0.0.1:5173:5173"]
+    environment:
+      VITE_API_PROXY_TARGET: http://backend:8000
+    depends_on:
+      backend: {condition: service_healthy}
+
+networks:
+  default:
+  functions:
+    internal: true
+
+volumes:
+  pg_data:
+  falkordb_data:
