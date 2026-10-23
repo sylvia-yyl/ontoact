@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  /* One accent (blue-600) on cool neutral surfaces. */
+  --brand: #2563eb;
+  --brand-strong: #1d4ed8;
+  --brand-soft: #eff6ff;
+  --brand-border: #bfdbfe;
+  --surface-canvas: #f8fafc;
+  --surface: #ffffff;
+  --surface-sidebar: #0f172a;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --subtle: #64748b;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --success: #15803d;
+  --warning: #b45309;
+  --danger: #b91c1c;
+  font-family: Inter, "SF Pro Display", system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { min-height: 100%; min-width: 0; }
+body {
+  margin: 0;
+  /* Keep the shell shrinkable. Dense tables and canvases own their
+     horizontal overflow; the fixed navigation must never cover actions. */
+  min-width: 0;
+  overflow-x: hidden;
+  background: var(--surface-canvas);
+  color: var(--ink);
+}
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+::selection { background: #dbeafe; color: var(--ink); }
+button, input, select, textarea { accent-color: var(--brand); }
+
+@layer components {
+  .wb-surface { @apply rounded-xl border bg-white; border-color: var(--border); }
+  .wb-eyebrow { @apply text-[11px] font-semibold uppercase tracking-[0.16em]; color: var(--subtle); }
+  .wb-button-primary { @apply inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium text-white transition-colors; background: var(--brand); box-shadow: 0 4px 12px rgba(139,26,43,.16); }
+  .wb-button-primary:hover { background: var(--brand); }
+  .wb-button-primary:disabled { opacity: .45; }
+  .wb-button-secondary { @apply inline-flex items-center justify-center gap-2 rounded-lg border bg-white px-3.5 py-2 text-sm font-medium transition-colors; border-color: var(--border-strong); color: var(--ink); }
+  .wb-button-secondary:hover { background: var(--brand-soft); border-color: var(--brand-border); color: var(--brand-strong); }
+  .wb-button-secondary:disabled { opacity: .45; }
+  .wb-input { @apply w-full rounded-lg border bg-white px-3 py-2 text-sm outline-none transition-shadow; border-color: var(--border-strong); }
+  .wb-input:focus { box-shadow: 0 0 0 3px rgba(37, 99, 235, .16); border-color: var(--brand); }
+  .wb-page-title { @apply text-[25px] font-semibold tracking-[-0.02em]; }
+  .wb-page-subtitle { @apply mt-1 text-sm; color: var(--muted); }
+  .wb-page { @apply space-y-5; }
+  .wb-page-header { @apply flex items-start justify-between gap-4; }
+  .wb-section-kicker { @apply text-[11px] font-semibold uppercase tracking-[0.14em]; color: var(--subtle); }
+  .wb-section-title { @apply text-lg font-semibold tracking-[-0.01em] text-gray-900; }
+  .wb-label { @apply block text-xs font-medium text-gray-600; }
+  .wb-status { @apply inline-flex items-center rounded-full border px-2 py-1 text-[11px] font-medium; border-color: var(--border); color: var(--muted); background: #f8fafc; }
+  .wb-status-success { @apply border-emerald-200 bg-emerald-50 text-emerald-700; }
+  .wb-status-warning { @apply border-amber-200 bg-amber-50 text-amber-700; }
+  .wb-status-danger { @apply border-red-200 bg-red-50 text-red-700; }
+  .wb-alert { @apply flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm; }
+  .wb-alert-danger { @apply border-red-200 bg-red-50 text-red-700; }
+  .wb-stepper { @apply flex items-center gap-1 overflow-x-auto p-2; }
+  .wb-step { @apply flex min-w-0 flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-gray-400 transition-colors; }
+  .wb-step-active { @apply text-white; background: var(--brand); }
+  .wb-step-done { color: var(--brand-strong); }
+  .wb-step-index { @apply inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[11px]; border-color: currentColor; }
+  .wb-choice-card { @apply rounded-xl border bg-white p-4 transition-colors; border-color: var(--border); }
+  .wb-choice-card:hover, .wb-sample-card:hover { @apply border-gray-400; }
+  .wb-choice-selected { border-color: var(--brand); background: var(--brand-soft); box-shadow: inset 0 0 0 1px rgba(196,18,48,.22); }
+  .wb-icon-box { @apply inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-600; background: var(--brand-soft); color: var(--brand); }
+  .wb-tag { @apply inline-flex rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[10px] text-gray-500; }
+  .wb-empty { @apply flex min-h-[130px] items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 text-sm text-gray-500; }
+  .wb-filter-chip { @apply rounded-md border border-gray-200 bg-white px-2 py-1 text-[11px] text-gray-500; }
+  .wb-filter-chip-active { border-color: var(--brand-border); background: var(--brand-soft); color: var(--brand-strong); }
+  .wb-sample-card { @apply rounded-lg border bg-white p-3 transition-colors; border-color: var(--border); }
+  .wb-radio-card { @apply flex items-start gap-3 rounded-lg border bg-white p-3 text-left text-gray-700; border-color: var(--border); }
+  .wb-radio-card p { @apply mt-1 text-xs font-normal text-gray-500; }
+  .wb-config-row { @apply flex items-center justify-between border-t border-gray-100 pt-3 text-sm; }
+  .wb-mapping-card { @apply flex cursor-pointer items-start gap-3 rounded-lg border bg-white p-3; border-color: var(--border); }
+  .wb-mapping-card strong { @apply text-sm text-gray-800; }
+  .wb-mapping-card p { @apply mt-1 text-xs text-gray-500; }
+  .wb-mapping-card span { @apply mt-2 inline-flex text-[10px] text-gray-400; }
+  .wb-summary-grid { @apply grid grid-cols-2 gap-3 rounded-lg bg-gray-50 p-3 md:grid-cols-4; }
+  .wb-summary-grid span { @apply block text-[11px] text-gray-400; }
+  .wb-summary-grid strong { @apply mt-1 block truncate text-sm text-gray-800; }
+  .wb-task-card { @apply rounded-lg border border-gray-200 bg-gray-50 p-3; }
+  /* Reserve a predictable lower-right interaction lane for the fixed FAQ. */
+  .wb-wizard-actions { @apply flex items-center justify-between pb-4; }
+}
+
+.workbench-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+.workbench-scrollbar::-webkit-scrollbar-thumb { background: #c8d0d8; border-radius: 999px; }
+.workbench-scrollbar::-webkit-scrollbar-track { background: transparent; }
