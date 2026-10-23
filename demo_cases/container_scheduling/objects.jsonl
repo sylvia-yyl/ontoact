@@ -1,0 +1,9 @@
+{"id": "AMS", "properties": {"capacity": 3000, "code": "AMS", "demand_w1": 800, "demand_w2": 800, "demand_w3": 800, "on_hand": 1000}, "type": "Warehouse"}
+{"id": "RTM", "properties": {"capacity": 2500, "code": "RTM", "demand_w1": 1500, "demand_w2": 900, "demand_w3": 900, "on_hand": 1200}, "type": "Warehouse"}
+{"id": "UTR", "properties": {"capacity": 4000, "code": "UTR", "demand_w1": 300, "demand_w2": 300, "demand_w3": 300, "on_hand": 2000}, "type": "Warehouse"}
+{"id": "C1", "properties": {"code": "C1", "demurrage_per_day": 200, "destination": "AMS", "port_day": 0, "quantity": 1000, "status": "at_port"}, "type": "Container"}
+{"id": "C2", "properties": {"code": "C2", "demurrage_per_day": 100, "destination": "RTM", "port_day": 1, "quantity": 1000, "status": "at_port"}, "type": "Container"}
+{"id": "C3", "properties": {"code": "C3", "destination": "UTR", "eta_day": 9, "quantity": 1000, "status": "at_sea"}, "type": "Container"}
+{"id": "C4", "properties": {"allowed_destinations": ["UTR", "RTM"], "code": "C4", "cutoff_day": 3, "destination": "UTR", "eta_day": 12, "quantity": 1000, "status": "loaded_at_origin"}, "type": "Container"}
+{"id": "C5", "properties": {"allowed_destinations": ["AMS", "UTR"], "code": "C5", "cutoff_day": 2, "destination": "AMS", "eta_day": 15, "quantity": 1000, "status": "loaded_at_origin"}, "type": "Container"}
+{"id": "C6", "properties": {"allowed_destinations": ["RTM", "AMS"], "code": "C6", "cutoff_day": 0, "destination": "RTM", "eta_day": 16, "quantity": 1000, "status": "loaded_at_origin"}, "type": "Container"}

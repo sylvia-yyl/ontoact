@@ -1,0 +1,34 @@
+{
+  "case": "dataco_mrp",
+  "objects": 943,
+  "links": 1138,
+  "sources": {
+    "demand": "DataCo Smart Supply Chain (doi:10.17632/8gx2fvg2k6.5, CC BY 4.0), sha256 fa6d022ed437155e1a2f0378710602848703c8a7f203f7ff5d77805bf8480aa6",
+    "supply": "BOM, stock, POs, capacity, supplier disruption, quality hold (fixed rules, seed 20161003)"
+  },
+  "license": "Demand rows: CC BY 4.0 (DataCo Smart Supply Chain). Rule-generated supply: same terms as this repository.",
+  "pack_version": 1,
+  "exported": "2026-10-23",
+  "files": {
+    "app.json": {
+      "sha256": "1f6619608b22ddb92d4ce8d4afe62f0d80786bf301a6a369bf57e560a387b4ff",
+      "bytes": 10514
+    },
+    "links.jsonl": {
+      "sha256": "6db97f32b03620de05926f0fb9491dd8125ab85e069d3f7be61766a71628ea50",
+      "bytes": 89001
+    },
+    "objects.jsonl": {
+      "sha256": "2c5556dd68042b9cb762be313ce7d3e8e3617c08c5dfc50d025ea67ea82e1cca",
+      "bytes": 203290
+    },
+    "ontology.json": {
+      "sha256": "fdff2431b16342d6ade30238635e87b4ac257bd518c8a9893455150721d2c152",
+      "bytes": 7655
+    },
+    "study.json": {
+      "sha256": "538f31866780e097fc444ca73980ecae56f02d9fa37a8fbd5c9a39ca5e9bd641",
+      "bytes": 8539
+    }
+  }
+}

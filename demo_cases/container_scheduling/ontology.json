@@ -1,0 +1,91 @@
+{
+  "name": "Container Scheduling",
+  "domain": "Logistics",
+  "description": "Three-week warehouse supply and demand, container pickup order and destination changes.",
+  "object_types": [
+    {
+      "api_name": "Warehouse",
+      "key_property": "code",
+      "properties": [
+        {
+          "id": "code",
+          "type": "string"
+        },
+        {
+          "id": "on_hand",
+          "type": "double"
+        },
+        {
+          "id": "capacity",
+          "type": "double"
+        },
+        {
+          "id": "demand_w1",
+          "type": "double"
+        },
+        {
+          "id": "demand_w2",
+          "type": "double"
+        },
+        {
+          "id": "demand_w3",
+          "type": "double"
+        }
+      ]
+    },
+    {
+      "api_name": "Container",
+      "key_property": "code",
+      "properties": [
+        {
+          "id": "code",
+          "type": "string"
+        },
+        {
+          "id": "status",
+          "type": "string"
+        },
+        {
+          "id": "destination",
+          "type": "string"
+        },
+        {
+          "id": "quantity",
+          "type": "double"
+        },
+        {
+          "id": "port_day",
+          "type": "double"
+        },
+        {
+          "id": "demurrage_per_day",
+          "type": "double"
+        },
+        {
+          "id": "eta_day",
+          "type": "double"
+        },
+        {
+          "id": "cutoff_day",
+          "type": "double"
+        },
+        {
+          "id": "allowed_destinations",
+          "type": "array"
+        },
+        {
+          "id": "pickup_rank",
+          "type": "integer"
+        }
+      ]
+    }
+  ],
+  "link_types": [
+    {
+      "api_name": "BOUND_FOR",
+      "source": "Container",
+      "target": "Warehouse",
+      "via": "destination"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{"source": "C1", "target": "AMS", "type": "BOUND_FOR"}
+{"source": "C2", "target": "RTM", "type": "BOUND_FOR"}
+{"source": "C3", "target": "UTR", "type": "BOUND_FOR"}
+{"source": "C4", "target": "UTR", "type": "BOUND_FOR"}
+{"source": "C5", "target": "AMS", "type": "BOUND_FOR"}
+{"source": "C6", "target": "RTM", "type": "BOUND_FOR"}

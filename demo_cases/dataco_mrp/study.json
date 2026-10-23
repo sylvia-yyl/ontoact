@@ -1,0 +1,352 @@
+{
+  "name": "Quarterly portfolio plan",
+  "description": "Plans every product line from Ontology objects and evaluates expedite, rework, deferral and policy actions.",
+  "builtin_functions": [
+    "mrp_planning_v1"
+  ],
+  "spec": {
+    "spec_version": "scenario-study/v1",
+    "context_policy": {
+      "scenario_mode": "pinned_on_run",
+      "time_required": true
+    },
+    "parameters": [
+      {
+        "key": "scenario_time",
+        "label": "Planning date",
+        "type": "datetime",
+        "default": "2016-10-03T00:00:00Z"
+      },
+      {
+        "key": "horizon_weeks",
+        "label": "Horizon (weeks)",
+        "type": "integer",
+        "default": 52
+      },
+      {
+        "key": "quarter_start",
+        "label": "Quarter start (days from planning date)",
+        "type": "integer",
+        "default": 0
+      },
+      {
+        "key": "quarter_end",
+        "label": "Quarter end (days from planning date)",
+        "type": "integer",
+        "default": 91
+      }
+    ],
+    "nodes": [
+      {
+        "key": "read_demands",
+        "kind": "object_query",
+        "outputs": {
+          "objects": "object_set"
+        },
+        "config": {
+          "type": "CustomerOrder",
+          "select": [
+            "allocation_rank",
+            "alternate_resources",
+            "customer",
+            "due_at",
+            "item",
+            "priority",
+            "processing_days",
+            "product_line",
+            "quantity",
+            "resource",
+            "source_orders",
+            "unit_revenue"
+          ]
+        }
+      },
+      {
+        "key": "read_boms",
+        "kind": "object_query",
+        "outputs": {
+          "objects": "object_set"
+        },
+        "config": {
+          "type": "BOMLine",
+          "select": [
+            "component_item",
+            "parent_item",
+            "quantity_per"
+          ]
+        }
+      },
+      {
+        "key": "read_inventory",
+        "kind": "object_query",
+        "outputs": {
+          "objects": "object_set"
+        },
+        "config": {
+          "type": "InventoryLot",
+          "select": [
+            "item",
+            "location",
+            "quantity"
+          ]
+        }
+      },
+      {
+        "key": "read_reservations",
+        "kind": "object_query",
+        "outputs": {
+          "objects": "object_set"
+        },
+        "config": {
+          "type": "Reservation",
+          "select": [
+            "demand_id",
+            "item",
+            "quantity",
+            "status"
+          ]
+        }
+      },
+      {
+        "key": "read_supply_commitments",
+        "kind": "object_query",
+        "outputs": {
+          "objects": "object_set"
+        },
+        "config": {
+          "type": "SupplyCommitment",
+          "select": [
+            "available_at",
+            "confidence",
+            "expedite_available_at",
+            "expedite_unit_premium",
+            "expedited",
+            "expires_at",
+            "item",
+            "quantity",
+            "rescheduled_from",
+            "source_option_id",
+            "status",
+            "supplier",
+            "unit_cost"
+          ]
+        }
+      },
+      {
+        "key": "read_supply_options",
+        "kind": "object_query",
+        "outputs": {
+          "objects": "object_set"
+        },
+        "config": {
+          "type": "SupplyOption",
+          "select": [
+            "consumes_item",
+            "item",
+            "lead_time",
+            "qualified",
+            "quantity",
+            "supplier",
+            "unit_cost"
+          ]
+        }
+      },
+      {
+        "key": "read_fixed_tasks",
+        "kind": "object_query",
+        "outputs": {
+          "objects": "object_set"
+        },
+        "config": {
+          "type": "FixedTask",
+          "select": [
+            "finish",
+            "resource",
+            "start"
+          ]
+        }
+      },
+      {
+        "key": "read_product_lines",
+        "kind": "object_query",
+        "outputs": {
+          "objects": "object_set"
+        },
+        "config": {
+          "type": "ProductLine",
+          "select": [
+            "code",
+            "conversion_cost",
+            "name",
+            "policy",
+            "resource",
+            "source_product",
+            "unit_price",
+            "weekly_rate"
+          ]
+        }
+      },
+      {
+        "key": "read_policy_definitions",
+        "kind": "object_query",
+        "outputs": {
+          "objects": "object_set"
+        },
+        "config": {
+          "type": "PlanningPolicy",
+          "select": [
+            "capacity_factor",
+            "code",
+            "conversion_factor",
+            "exclude_low_confidence",
+            "pull_in_days"
+          ]
+        }
+      },
+      {
+        "key": "read_items",
+        "kind": "object_query",
+        "outputs": {
+          "objects": "object_set"
+        },
+        "config": {
+          "type": "ItemMaster",
+          "select": [
+            "code",
+            "critical",
+            "kind",
+            "lead_time_days",
+            "name",
+            "product_line",
+            "unit_cost"
+          ]
+        }
+      },
+      {
+        "key": "plan",
+        "kind": "function",
+        "implementation": {
+          "key": "mrp_planning_v1",
+          "version": "1.0.0"
+        },
+        "inputs": {
+          "scenario_time": {
+            "parameter": "scenario_time"
+          },
+          "horizon_weeks": {
+            "parameter": "horizon_weeks"
+          },
+          "quarter_start": {
+            "parameter": "quarter_start"
+          },
+          "quarter_end": {
+            "parameter": "quarter_end"
+          },
+          "demands": {
+            "from": "read_demands.objects"
+          },
+          "boms": {
+            "from": "read_boms.objects"
+          },
+          "inventory": {
+            "from": "read_inventory.objects"
+          },
+          "reservations": {
+            "from": "read_reservations.objects"
+          },
+          "supply_commitments": {
+            "from": "read_supply_commitments.objects"
+          },
+          "supply_options": {
+            "from": "read_supply_options.objects"
+          },
+          "fixed_tasks": {
+            "from": "read_fixed_tasks.objects"
+          },
+          "product_lines": {
+            "from": "read_product_lines.objects"
+          },
+          "policy_definitions": {
+            "from": "read_policy_definitions.objects"
+          },
+          "items": {
+            "from": "read_items.objects"
+          }
+        },
+        "outputs": {
+          "scenario_time": "scenario_time",
+          "quarter": "quarter",
+          "totals": "totals",
+          "portfolio": "portfolio",
+          "policies": "policies",
+          "demand_events": "demand_events",
+          "demand_by_month": "demand_by_month",
+          "coverage": "coverage",
+          "candidate_actions": "candidate_actions",
+          "projected_revenue": "projected_revenue",
+          "revenue_at_risk": "revenue_at_risk",
+          "completeness": "completeness"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "read_demands.objects",
+        "target": "plan.demands"
+      },
+      {
+        "source": "read_boms.objects",
+        "target": "plan.boms"
+      },
+      {
+        "source": "read_inventory.objects",
+        "target": "plan.inventory"
+      },
+      {
+        "source": "read_reservations.objects",
+        "target": "plan.reservations"
+      },
+      {
+        "source": "read_supply_commitments.objects",
+        "target": "plan.supply_commitments"
+      },
+      {
+        "source": "read_supply_options.objects",
+        "target": "plan.supply_options"
+      },
+      {
+        "source": "read_fixed_tasks.objects",
+        "target": "plan.fixed_tasks"
+      },
+      {
+        "source": "read_product_lines.objects",
+        "target": "plan.product_lines"
+      },
+      {
+        "source": "read_policy_definitions.objects",
+        "target": "plan.policy_definitions"
+      },
+      {
+        "source": "read_items.objects",
+        "target": "plan.items"
+      }
+    ],
+    "metrics": [
+      {
+        "key": "projected_revenue",
+        "label": "Projected quarterly revenue",
+        "type": "decimal",
+        "direction": "maximize",
+        "unit": "currency",
+        "source": "plan.projected_revenue"
+      }
+    ],
+    "constraints": [],
+    "budgets": {
+      "max_nodes": 50,
+      "max_objects": 100000,
+      "max_wall_seconds": 900,
+      "max_artifact_bytes": 52428800
+    }
+  }
+}

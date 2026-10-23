@@ -1,0 +1,389 @@
+{
+  "name": "DataCo Quarterly Planning",
+  "domain": "Manufacturing",
+  "description": "Quarterly revenue, demand risk, material coverage and recovery actions for five product lines.",
+  "object_types": [
+    {
+      "api_name": "CustomerOrder",
+      "key_property": null,
+      "properties": [
+        {
+          "id": "item",
+          "type": "string"
+        },
+        {
+          "id": "quantity",
+          "type": "double"
+        },
+        {
+          "id": "due_at",
+          "type": "double"
+        },
+        {
+          "id": "priority",
+          "type": "double"
+        },
+        {
+          "id": "unit_revenue",
+          "type": "double"
+        },
+        {
+          "id": "processing_days",
+          "type": "double"
+        },
+        {
+          "id": "resource",
+          "type": "string"
+        },
+        {
+          "id": "alternate_resources",
+          "type": "array"
+        },
+        {
+          "id": "allocation_rank",
+          "type": "double"
+        },
+        {
+          "id": "product_line",
+          "type": "string"
+        },
+        {
+          "id": "customer",
+          "type": "string"
+        },
+        {
+          "id": "source_orders",
+          "type": "double"
+        }
+      ]
+    },
+    {
+      "api_name": "BOMLine",
+      "key_property": null,
+      "properties": [
+        {
+          "id": "parent_item",
+          "type": "string"
+        },
+        {
+          "id": "component_item",
+          "type": "string"
+        },
+        {
+          "id": "quantity_per",
+          "type": "double"
+        }
+      ]
+    },
+    {
+      "api_name": "InventoryLot",
+      "key_property": null,
+      "properties": [
+        {
+          "id": "item",
+          "type": "string"
+        },
+        {
+          "id": "location",
+          "type": "string"
+        },
+        {
+          "id": "quantity",
+          "type": "double"
+        }
+      ]
+    },
+    {
+      "api_name": "Reservation",
+      "key_property": null,
+      "properties": [
+        {
+          "id": "item",
+          "type": "string"
+        },
+        {
+          "id": "demand_id",
+          "type": "string"
+        },
+        {
+          "id": "quantity",
+          "type": "double"
+        },
+        {
+          "id": "status",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "api_name": "SupplyCommitment",
+      "key_property": null,
+      "properties": [
+        {
+          "id": "supplier",
+          "type": "string"
+        },
+        {
+          "id": "item",
+          "type": "string"
+        },
+        {
+          "id": "quantity",
+          "type": "double"
+        },
+        {
+          "id": "available_at",
+          "type": "double"
+        },
+        {
+          "id": "expires_at",
+          "type": "string"
+        },
+        {
+          "id": "status",
+          "type": "string"
+        },
+        {
+          "id": "unit_cost",
+          "type": "double"
+        },
+        {
+          "id": "expedite_available_at",
+          "type": "double"
+        },
+        {
+          "id": "expedite_unit_premium",
+          "type": "double"
+        },
+        {
+          "id": "expedited",
+          "type": "boolean"
+        },
+        {
+          "id": "source_option_id",
+          "type": "string"
+        },
+        {
+          "id": "confidence",
+          "type": "double"
+        },
+        {
+          "id": "rescheduled_from",
+          "type": "double"
+        }
+      ]
+    },
+    {
+      "api_name": "SupplyOption",
+      "key_property": null,
+      "properties": [
+        {
+          "id": "supplier",
+          "type": "string"
+        },
+        {
+          "id": "item",
+          "type": "string"
+        },
+        {
+          "id": "quantity",
+          "type": "double"
+        },
+        {
+          "id": "lead_time",
+          "type": "double"
+        },
+        {
+          "id": "unit_cost",
+          "type": "double"
+        },
+        {
+          "id": "qualified",
+          "type": "boolean"
+        },
+        {
+          "id": "consumes_item",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "api_name": "FixedTask",
+      "key_property": null,
+      "properties": [
+        {
+          "id": "resource",
+          "type": "string"
+        },
+        {
+          "id": "start",
+          "type": "double"
+        },
+        {
+          "id": "finish",
+          "type": "double"
+        }
+      ]
+    },
+    {
+      "api_name": "ProductLine",
+      "key_property": "code",
+      "properties": [
+        {
+          "id": "code",
+          "type": "string"
+        },
+        {
+          "id": "name",
+          "type": "string"
+        },
+        {
+          "id": "source_product",
+          "type": "string"
+        },
+        {
+          "id": "policy",
+          "type": "string"
+        },
+        {
+          "id": "unit_price",
+          "type": "double"
+        },
+        {
+          "id": "weekly_rate",
+          "type": "double"
+        },
+        {
+          "id": "conversion_cost",
+          "type": "double"
+        },
+        {
+          "id": "resource",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "api_name": "PlanningPolicy",
+      "key_property": "code",
+      "properties": [
+        {
+          "id": "code",
+          "type": "string"
+        },
+        {
+          "id": "capacity_factor",
+          "type": "double"
+        },
+        {
+          "id": "pull_in_days",
+          "type": "double"
+        },
+        {
+          "id": "conversion_factor",
+          "type": "double"
+        },
+        {
+          "id": "exclude_low_confidence",
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "api_name": "ItemMaster",
+      "key_property": "code",
+      "properties": [
+        {
+          "id": "code",
+          "type": "string"
+        },
+        {
+          "id": "kind",
+          "type": "string"
+        },
+        {
+          "id": "name",
+          "type": "string"
+        },
+        {
+          "id": "product_line",
+          "type": "string"
+        },
+        {
+          "id": "unit_cost",
+          "type": "double"
+        },
+        {
+          "id": "lead_time_days",
+          "type": "double"
+        },
+        {
+          "id": "critical",
+          "type": "boolean"
+        }
+      ]
+    }
+  ],
+  "link_types": [
+    {
+      "api_name": "ORDERS",
+      "source": "CustomerOrder",
+      "target": "ItemMaster",
+      "via": "item"
+    },
+    {
+      "api_name": "IN_PRODUCT_LINE",
+      "source": "CustomerOrder",
+      "target": "ProductLine",
+      "via": "product_line"
+    },
+    {
+      "api_name": "PARENT_ITEM",
+      "source": "BOMLine",
+      "target": "ItemMaster",
+      "via": "parent_item"
+    },
+    {
+      "api_name": "COMPONENT_ITEM",
+      "source": "BOMLine",
+      "target": "ItemMaster",
+      "via": "component_item"
+    },
+    {
+      "api_name": "STOCK_OF",
+      "source": "InventoryLot",
+      "target": "ItemMaster",
+      "via": "item"
+    },
+    {
+      "api_name": "SUPPLIES",
+      "source": "SupplyCommitment",
+      "target": "ItemMaster",
+      "via": "item"
+    },
+    {
+      "api_name": "CAN_SUPPLY",
+      "source": "SupplyOption",
+      "target": "ItemMaster",
+      "via": "item"
+    },
+    {
+      "api_name": "RESERVED_FOR",
+      "source": "Reservation",
+      "target": "CustomerOrder",
+      "via": "demand_id"
+    },
+    {
+      "api_name": "IN_PRODUCT_LINE",
+      "source": "ItemMaster",
+      "target": "ProductLine",
+      "via": "product_line"
+    },
+    {
+      "api_name": "USES_POLICY",
+      "source": "ProductLine",
+      "target": "PlanningPolicy",
+      "via": "policy"
+    }
+  ]
+}

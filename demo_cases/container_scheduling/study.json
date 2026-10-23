@@ -1,0 +1,202 @@
+{
+  "name": "Three-week supply and demand",
+  "description": "Plans container pickups and destination changes against warehouse demand.",
+  "user_functions": [
+    {
+      "asset_key": "container_decision",
+      "name": "Container and destination decision",
+      "version": "1.0.0",
+      "source_file": "decision_function.py",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "warehouses",
+          "containers",
+          "scenario_day",
+          "pickup_interval_days"
+        ],
+        "properties": {
+          "warehouses": {
+            "type": "array"
+          },
+          "containers": {
+            "type": "array"
+          },
+          "scenario_day": {
+            "type": "number"
+          },
+          "pickup_interval_days": {
+            "type": "number"
+          }
+        }
+      },
+      "output_schema": {
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "properties": {
+          "decision": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  ],
+  "action_types": [
+    {
+      "name": "Change destination",
+      "parameters": [
+        {
+          "name": "container",
+          "type": "object",
+          "object_type": "Container"
+        },
+        {
+          "name": "destination",
+          "type": "string"
+        }
+      ],
+      "rules": [
+        {
+          "op": "set_property",
+          "target_parameter": "container",
+          "property": "destination",
+          "value_parameter": "destination"
+        }
+      ],
+      "external_effect": {
+        "kind": "carrier_rebooking",
+        "description": "Asks the carrier to rebook the container to the new destination"
+      }
+    },
+    {
+      "name": "Set pickup order",
+      "parameters": [
+        {
+          "name": "container",
+          "type": "object",
+          "object_type": "Container"
+        },
+        {
+          "name": "rank",
+          "type": "number"
+        }
+      ],
+      "rules": [
+        {
+          "op": "set_property",
+          "target_parameter": "container",
+          "property": "pickup_rank",
+          "value_parameter": "rank"
+        }
+      ]
+    }
+  ],
+  "spec": {
+    "spec_version": "scenario-study/v1",
+    "context_policy": {
+      "scenario_mode": "pinned_on_run",
+      "time_required": false
+    },
+    "parameters": [
+      {
+        "key": "scenario_day",
+        "label": "Scenario day",
+        "type": "decimal",
+        "default": 0
+      },
+      {
+        "key": "pickup_interval_days",
+        "label": "Days between pickups",
+        "type": "decimal",
+        "default": 7
+      }
+    ],
+    "nodes": [
+      {
+        "key": "read_warehouses",
+        "kind": "object_query",
+        "outputs": {
+          "objects": "object_set"
+        },
+        "config": {
+          "type": "Warehouse",
+          "select": [
+            "code",
+            "on_hand",
+            "capacity",
+            "demand_w1",
+            "demand_w2",
+            "demand_w3"
+          ]
+        }
+      },
+      {
+        "key": "read_containers",
+        "kind": "object_query",
+        "outputs": {
+          "objects": "object_set"
+        },
+        "config": {
+          "type": "Container",
+          "select": [
+            "code",
+            "status",
+            "destination",
+            "quantity",
+            "port_day",
+            "demurrage_per_day",
+            "eta_day",
+            "cutoff_day",
+            "allowed_destinations",
+            "pickup_rank"
+          ]
+        }
+      },
+      {
+        "key": "decide",
+        "kind": "function",
+        "implementation": {
+          "key": "container_decision",
+          "version": "1.0.0"
+        },
+        "inputs": {
+          "warehouses": {
+            "from": "read_warehouses.objects"
+          },
+          "containers": {
+            "from": "read_containers.objects"
+          },
+          "scenario_day": {
+            "parameter": "scenario_day"
+          },
+          "pickup_interval_days": {
+            "parameter": "pickup_interval_days"
+          }
+        },
+        "outputs": {
+          "decision": "decision"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "read_warehouses.objects",
+        "target": "decide.warehouses"
+      },
+      {
+        "source": "read_containers.objects",
+        "target": "decide.containers"
+      }
+    ],
+    "metrics": [],
+    "constraints": [],
+    "budgets": {
+      "max_nodes": 10,
+      "max_objects": 10000,
+      "max_wall_seconds": 300,
+      "max_artifact_bytes": 10485760
+    }
+  }
+}

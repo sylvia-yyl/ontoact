@@ -1,0 +1,33 @@
+{
+  "case": "container_scheduling",
+  "objects": 9,
+  "links": 6,
+  "sources": {
+    "all": "Synthetic data written for this demo; days are offsets from scenario day 0."
+  },
+  "license": "Same terms as this repository.",
+  "pack_version": 1,
+  "exported": "2026-10-23",
+  "files": {
+    "decision_function.py": {
+      "sha256": "5a429f5e863e9017bbca8006d55e5e5e460cd73dcaf642756e24f04072c49882",
+      "bytes": 8288
+    },
+    "links.jsonl": {
+      "sha256": "889a669eacc5b65cdef972b29ad6123e4b3143bc10834bf71f297cec3b77d8ed",
+      "bytes": 330
+    },
+    "objects.jsonl": {
+      "sha256": "09295d11bce807c82d65939621468b2ebc6228249dfe784ce68715c04a274b24",
+      "bytes": 1554
+    },
+    "ontology.json": {
+      "sha256": "4fffe0b3f4dddc00a4cd96ef691f0bd5e56640b715f073b01397d92328d43616",
+      "bytes": 1787
+    },
+    "study.json": {
+      "sha256": "b41392d88254fe7507df57240ddcc2ed40ddfd9aacbf7910711e0c95cc2562e5",
+      "bytes": 4585
+    }
+  }
+}
