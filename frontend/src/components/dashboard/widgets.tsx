@@ -44,7 +44,7 @@ export function StackedBarChart({ categories, series, height = 260, label }: { c
     const chart = echarts.init(ref.current)
     chart.setOption({
       animation: false, grid: { left: 48, right: 16, top: 28, bottom: 40 }, legend: { right: 8, top: 0 },
-      tooltip: { trigger: 'axis' }, xAxis: { type: 'category', data: categories }, yAxis: { type: 'value', name: '需求数量' },
+      tooltip: { trigger: 'axis' }, xAxis: { type: 'category', data: categories }, yAxis: { type: 'value', name: 'Demand' },
       series: series.map(row => ({ name: row.name, type: 'bar', stack: 'total', data: row.data, itemStyle: { color: row.color }, label: { show: true, position: 'inside', fontSize: 10 } })),
     })
     const resize = () => chart.resize()
@@ -58,7 +58,7 @@ export function StackedBarChart({ categories, series, height = 260, label }: { c
 export function CoverageGrid({ columns, rows, label }: { columns: string[]; rows: Array<{ key: string; label: string; values: number[]; emphasis?: boolean }>; label: string }) {
   const tone = (value: number) => value < 0 ? 'bg-rose-100 text-rose-800' : value === 0 ? 'bg-amber-50 text-amber-800' : 'bg-emerald-50 text-emerald-800'
   return <div className="overflow-auto" data-testid="coverage-grid"><table className="border-collapse text-xs" aria-label={label}>
-    <thead className="sticky top-0 bg-slate-50 text-slate-500"><tr><th className="sticky left-0 z-10 min-w-48 border-b bg-slate-50 px-3 py-2 text-left font-medium">物料</th>{columns.map(col => <th key={col} className="min-w-20 border-b px-2 py-2 text-right font-medium">{col}</th>)}</tr></thead>
+    <thead className="sticky top-0 bg-slate-50 text-slate-500"><tr><th className="sticky left-0 z-10 min-w-48 border-b bg-slate-50 px-3 py-2 text-left font-medium">Item</th>{columns.map(col => <th key={col} className="min-w-20 border-b px-2 py-2 text-right font-medium">{col}</th>)}</tr></thead>
     <tbody>{rows.map(row => <tr key={row.key} className="border-b">
       <td className={`sticky left-0 bg-white px-3 py-1.5 ${row.emphasis ? 'font-semibold' : ''}`}>{row.label}</td>
       {row.values.map((value, index) => <td key={index} className={`px-2 py-1.5 text-right tabular-nums ${tone(value)}`}>{Math.round(value)}</td>)}
@@ -67,7 +67,7 @@ export function CoverageGrid({ columns, rows, label }: { columns: string[]; rows
 }
 
 /** Share of a total per category, with the total in the middle. Clicking a slice selects its category. */
-export function DonutChart({ slices, label, centerLabel = '合计', onSelect, selected }: { slices: Array<{ key: string; value: number }>; label: string; centerLabel?: string; onSelect?: (key: string) => void; selected?: string | null }) {
+export function DonutChart({ slices, label, centerLabel = 'Total', onSelect, selected }: { slices: Array<{ key: string; value: number }>; label: string; centerLabel?: string; onSelect?: (key: string) => void; selected?: string | null }) {
   const total = slices.reduce((sum, row) => sum + row.value, 0)
   const ref = useChart(chart => {
     chart.setOption({ baseOption: {
@@ -83,7 +83,7 @@ export function DonutChart({ slices, label, centerLabel = '合计', onSelect, se
     })
     if (onSelect) chart.on('click', params => onSelect(String(params.name)))
   }, [slices, total, centerLabel, selected])
-  return <div ref={ref} className="h-full min-h-[180px]" role="img" aria-label={`${label}：合计 ${total}`} data-testid="donut-chart" />
+  return <div ref={ref} className="h-full min-h-[180px]" role="img" aria-label={`${label}: total ${total}`} data-testid="donut-chart" />
 }
 
 /** Horizontal ranking: label, proportional bar, value; largest first. */
@@ -144,6 +144,6 @@ export function GeoMap({ points, links = [], label, onSelect }: { points: MapPoi
     })
     if (onSelect) chart.on('click', params => { const id = (params.data as { id?: string } | undefined)?.id; if (id) onSelect(id) })
   }, [points, links], ready)
-  return <div className="relative h-full min-h-[240px]">{!ready && <p className="absolute inset-0 flex items-center justify-center text-xs text-slate-400">地图加载中…</p>}
-    <div ref={ref} className="h-full min-h-[240px]" role="img" aria-label={`${label}：${points.length} 个点`} data-testid="geo-map" /></div>
+  return <div className="relative h-full min-h-[240px]">{!ready && <p className="absolute inset-0 flex items-center justify-center text-xs text-slate-400">Loading map…</p>}
+    <div ref={ref} className="h-full min-h-[240px]" role="img" aria-label={`${label}: ${points.length} points`} data-testid="geo-map" /></div>
 }

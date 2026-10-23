@@ -1,4 +1,4 @@
-"""PRD v1.1 Ontology Action Type & Action Run 模型"""
+"""Ontology Action types and Action runs."""
 import uuid
 from datetime import datetime, timezone
 from sqlalchemy import String, DateTime, JSON, Text, Boolean, Integer, ForeignKey
@@ -7,7 +7,7 @@ from app.database import Base
 
 
 class OntologyActionType(Base):
-    """动作类型 — 可执行业务操作"""
+    """An executable business operation on ontology objects."""
     __tablename__ = "v2_ontology_action_types"
 
     id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -32,7 +32,7 @@ class OntologyActionType(Base):
 
 
 class OntologyActionRun(Base):
-    """动作执行记录 — 审计与回滚"""
+    """One Action execution, kept for audit and revert."""
     __tablename__ = "v2_ontology_action_runs"
 
     id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))

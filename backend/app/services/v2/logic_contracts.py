@@ -151,13 +151,13 @@ def normalize_units(schema: dict, payload: Any) -> tuple[Any, list[dict]]:
         if registry is None:
             factor = _BASIC_UNIT_FACTORS.get((source_unit, target_unit))
             if factor is None:
-                raise ValueError(f"{name} 无法转换单位 {source_unit} → {target_unit}（运行环境缺少 Pint）")
+                raise ValueError(f"{name}: cannot convert {source_unit} to {target_unit} (Pint is not installed)")
             result[name] = float(value["value"]) * factor
         else:
             try:
                 converted = registry.Quantity(value["value"], source_unit).to(target_unit)
             except Exception as exc:
-                raise ValueError(f"{name} 无法从 {source_unit} 转换为 {target_unit}: {exc}") from exc
+                raise ValueError(f"{name}: cannot convert {source_unit} to {target_unit}: {exc}") from exc
             result[name] = converted.magnitude
         trace.append({"stage": "normalize_unit", "from": source_unit, "to": target_unit})
     return result, trace

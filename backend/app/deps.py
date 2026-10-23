@@ -27,7 +27,7 @@ def get_current_user(
         user = db.query(User).filter(User.role == "admin", User.is_active == True).order_by(User.created_at).first()
         if user:
             return user
-        raise HTTPException(status_code=503, detail="本地管理员尚未初始化")
+        raise HTTPException(status_code=503, detail="The local administrator has not been created yet")
     if not credentials:
         raise HTTPException(status_code=403, detail="Not authenticated")
     try:
@@ -45,7 +45,7 @@ def require_admin(current_user: User = Depends(get_current_user)) -> User:
     return current_user
 
 def require_editor(current_user: User = Depends(get_current_user)) -> User:
-    """编辑权限：admin 或 editor 角色。"""
+    """Write access: admin or editor role."""
     if current_user.role not in ("admin", "editor"):
         raise HTTPException(status_code=403, detail="Editor role required")
     return current_user

@@ -80,7 +80,7 @@ def _authorize(ontology_id: str, db: Session, user, *, metadata_revision_id: str
             detail={
                 "code": "NOT_FOUND",
                 "message": "Ontology not found or inaccessible",
-                "next_action": "检查 ontology_id 或访问策略",
+                "next_action": "Check the ontology id or your access policy",
             },
         ) from exc
 

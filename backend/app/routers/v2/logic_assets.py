@@ -79,7 +79,7 @@ def _save_derived_facts(db, ontology_id: str, asset: LogicAsset, run: LogicAsset
 def _authorized(oid, db, user):
     item=db.get(OntologyProject, oid)
     if not item or (user.role != 'admin' and item.created_by != user.id):
-        raise HTTPException(404, '本体不存在或无访问权限')
+        raise HTTPException(404, 'Ontology not found or not accessible')
     return item
 
 def _seed(db, oid):
@@ -216,9 +216,9 @@ def list_runs(oid: str, limit: int = Query(default=20, ge=1, le=100), db: Sessio
 def run_asset(oid: str, asset_id: str, request: RunRequest, db: Session = Depends(get_db), user=Depends(require_editor)):
     _authorized(oid, db, user)
     asset=db.query(LogicAsset).filter_by(id=asset_id, ontology_id=oid).first()
-    if not asset: raise HTTPException(404, '逻辑资产不存在')
+    if not asset: raise HTTPException(404, 'Function not found')
     if asset.status != 'published' or asset.side_effect:
-        raise HTTPException(422, '只能执行已发布且无副作用的逻辑资产')
+        raise HTTPException(422, 'Only published functions without side effects can be run directly')
     started=perf_counter(); status='completed'; output=None; error=None; trace=[]
     inputs=dict(request.inputs)
     if request.object_id and not inputs:
@@ -226,9 +226,9 @@ def run_asset(oid: str, asset_id: str, request: RunRequest, db: Session = Depend
         # that are present on the selected graph object; never invent values.
         try:
             graph=FalkorDBService()
-            if not graph.available: raise ValueError('FalkorDB 不可用，无法绑定业务对象')
+            if not graph.available: raise ValueError('The graph database is unavailable, so objects cannot be bound')
             rows=graph._graph(oid).query('MATCH (n:Instance {_instance_id:$id, _ontology_id:$ontology}) RETURN n', params={'id':request.object_id, 'ontology':oid}).result_set
-            if not rows: raise ValueError(f'业务对象不存在: {request.object_id}')
+            if not rows: raise ValueError(f'Object not found: {request.object_id}')
             props=dict(getattr(rows[0][0], 'properties', rows[0][0]))
             from app.services.v2.object_query.metadata import load_sql_metadata
             metadata = load_sql_metadata(db, oid)
@@ -268,14 +268,14 @@ def execute_plan(oid: str, request: PlanRequest, db: Session = Depends(get_db), 
     for index, step in enumerate(request.steps):
         asset = db.query(LogicAsset).filter_by(id=step.asset_id, ontology_id=oid, status='published', side_effect=False).first()
         if not asset:
-            raise HTTPException(404, f'第 {index + 1} 步逻辑资产不存在或未发布')
+            raise HTTPException(404, f'Step {index + 1}: function not found or not published')
         inputs = dict(step.inputs)
         for target, reference in step.input_bindings.items():
             if not reference.startswith('$step.'):
-                raise HTTPException(422, f'第 {index + 1} 步绑定必须使用 $step.N.output.path')
+                raise HTTPException(422, f'Step {index + 1}: bindings must use $step.N.output.path')
             parts = reference.split('.')
             if len(parts) < 4 or not parts[1].isascii() or not parts[1].isdigit() or not 0 <= int(parts[1]) < index or parts[2] != 'output':
-                raise HTTPException(422, f'第 {index + 1} 步不能引用自身或无效步骤')
+                raise HTTPException(422, f'Step {index + 1}: cannot reference itself or an invalid step')
             try:
                 prior = outputs[int(parts[1])]
                 value = prior
@@ -283,7 +283,7 @@ def execute_plan(oid: str, request: PlanRequest, db: Session = Depends(get_db), 
                     value = value[part] if isinstance(value, dict) else value[int(part)]
                 inputs[target] = value
             except (IndexError, KeyError, ValueError, TypeError) as exc:
-                raise HTTPException(422, f'第 {index + 1} 步无法解析绑定 {reference}: {exc}') from exc
+                raise HTTPException(422, f'Step {index + 1}: cannot resolve binding {reference}: {exc}') from exc
         started = perf_counter(); status = 'completed'; output = None; error = None
         try:
             result = execute(_as_dict(asset), inputs); output = result['output']

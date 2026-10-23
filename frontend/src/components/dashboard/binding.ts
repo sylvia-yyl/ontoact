@@ -10,9 +10,9 @@ export function formatCell(value: unknown, format: Format = 'text'): string {
     if (format === 'percent') return `${Math.round(value * 100)}%`
     return Number.isInteger(value) ? value.toLocaleString('en-US') : value.toLocaleString('en-US', { maximumFractionDigits: 1 })
   }
-  if (typeof value === 'boolean') return value ? '是' : '否'
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No'
   if (format === 'date' && typeof value === 'string' && /^\d{4}-\d{2}-\d{2}/.test(value)) return value.slice(0, 16).replace('T', ' ')
-  if (Array.isArray(value)) return value.map(item => typeof item === 'object' && item ? String((item as Row).id ?? (item as Row).demand_id ?? JSON.stringify(item)) : plainId(String(item))).join('、')
+  if (Array.isArray(value)) return value.map(item => typeof item === 'object' && item ? String((item as Row).id ?? (item as Row).demand_id ?? JSON.stringify(item)) : plainId(String(item))).join(', ')
   return plainId(String(value))
 }
 
@@ -94,7 +94,7 @@ export function coordinate(value: unknown, limit: number): number | null {
   return Number.isFinite(number) && Math.abs(number) <= limit ? number : null
 }
 
-const SEVERITY: Record<string, 'bad' | 'warn' | 'good'> = { critical: 'bad', high: 'bad', 严重: 'bad', 高: 'bad', medium: 'warn', 中: 'warn', 预警: 'warn', low: 'good', 低: 'good', 正常: 'good' }
+const SEVERITY: Record<string, 'bad' | 'warn' | 'good'> = { critical: 'bad', high: 'bad', medium: 'warn', low: 'good' }
 export const severityTone = (value: unknown) => SEVERITY[String(value).toLowerCase()]
 
 export const PALETTE = ['#1d4ed8', '#0f766e', '#a16207', '#7c3aed', '#b91c1c', '#0369a1', '#4d7c0f', '#be185d']

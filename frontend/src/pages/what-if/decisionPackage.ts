@@ -10,9 +10,18 @@ export type Delivery = { external_effects: number; delivered: number; status: 'c
 // Seeded object ids may carry an ontology namespace ("5ef77329:ORD-1009"); show the business id.
 export const plain = (text: string) => text.replace(/\b[0-9a-f]{8}:/g, '')
 
+/** "expedite_supply_commitment" -> "Expedite supply commitment"; "commitment_id" -> "Commitment". */
+export const humanize = (key: string) => {
+  const words = key.replace(/_ids?$/, '').replace(/_/g, ' ').trim()
+  return words.charAt(0).toUpperCase() + words.slice(1)
+}
+
+const valueText = (value: unknown) => Array.isArray(value) ? value.join(', ') : typeof value === 'object' && value !== null ? String((value as { object_id?: string }).object_id ?? JSON.stringify(value)) : String(value)
+
+/** The parameters of an action invocation as "Name: value" pairs, without the action type. */
 export function describe(values: Record<string, unknown>) {
   return plain(Object.entries(values).filter(([key, value]) => key !== 'action_type' && value !== null && value !== undefined && !(Array.isArray(value) && !value.length))
-    .map(([key, value]) => `${key}=${Array.isArray(value) ? value.join(',') : typeof value === 'object' ? String((value as { object_id?: string }).object_id ?? JSON.stringify(value)) : String(value)}`).join(' · '))
+    .map(([key, value]) => `${humanize(key)}: ${valueText(value)}`).join(' · '))
 }
 
 /** The run's package is server state: it survives refreshes and reflects reviews done by other people. */

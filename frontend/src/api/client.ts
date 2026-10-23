@@ -19,7 +19,7 @@ type ApiClient = {
 }
 
 /** Convert the structured error envelopes returned by v2 into safe UI text. */
-export function formatApiError(error: unknown, fallback = '请求失败'): string {
+export function formatApiError(error: unknown, fallback = 'Request failed'): string {
   const value = error as {
     response?: { data?: { detail?: unknown } };
     detail?: unknown;
@@ -32,7 +32,7 @@ export function formatApiError(error: unknown, fallback = '请求失败'): strin
     const message = typeof item.message === 'string' ? item.message : ''
     const code = typeof item.error === 'string' ? item.error : ''
     const next = typeof item.next_action === 'string' ? item.next_action : ''
-    return [code, message, next].filter(Boolean).join('：') || fallback
+    return [code, message, next].filter(Boolean).join(': ') || fallback
   }
   if (typeof value?.message === 'string' && value.message.trim()) return value.message
   return fallback

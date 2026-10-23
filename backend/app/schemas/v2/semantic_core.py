@@ -149,14 +149,14 @@ class PolicyConditionContract(BaseModel):
 
     field: str | None = None
     property: str | None = None
-    operator: Literal["equals", "=", "==", "not_equals", "!=", "in", "not_in", ">", ">=", "<", "<=", "range", "belongs_to", "属于", "≠", "≥", "≤"] = "equals"
+    operator: Literal["equals", "=", "==", "not_equals", "!=", "in", "not_in", ">", ">=", "<", "<=", "range", "belongs_to", "≠", "≥", "≤"] = "equals"
     value: Any = None
 
     @field_validator("field", "property")
     @classmethod
     def non_empty_reference(cls, value: str | None) -> str | None:
         if value is not None and not value.strip():
-            raise ValueError("field/property 不能为空")
+            raise ValueError("field/property must not be empty")
         return value
 
 

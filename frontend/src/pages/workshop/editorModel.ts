@@ -20,7 +20,7 @@ export function resourceReferences(definition: AppDefinition, kind: 'source' | '
     if (kind === 'variable' && (widget.on_select?.set_variable === id || widget.props.variable === id || widget.props.filter_variable === id)) found.push(where)
   }
   if (kind === 'variable') for (const source of definition.data_sources) {
-    if (source.kind === 'query' && Object.values(source.params ?? {}).some(value => (value as { variable?: string } | null)?.variable === id)) found.push(`数据源 ${source.label || source.id} 的参数`)
+    if (source.kind === 'query' && Object.values(source.params ?? {}).some(value => (value as { variable?: string } | null)?.variable === id)) found.push(`a parameter of data source ${source.label || source.id}`)
   }
   return found
 }
@@ -33,20 +33,20 @@ export function validateDefinition(definition: AppDefinition): DefinitionIssue[]
   const pages = new Set(definition.pages.map(row => row.id))
   for (const page of definition.pages) {
     const widgets = new Set(page.widgets.map(row => row.id))
-    for (const item of page.layout) if (!widgets.has(item.i)) issues.push({ location: page.title, message: `布局引用了不存在的组件 ${item.i}` })
+    for (const item of page.layout) if (!widgets.has(item.i)) issues.push({ location: page.title, message: `Layout refers to missing widget ${item.i}` })
     for (const widget of page.widgets) {
       const location = `${page.title} / ${widget.title || widget.id}`
       const spec = specOf(widget.type)
-      if (!spec) issues.push({ location, message: `未知组件类型 ${widget.type}` })
-      for (const key of REQUIRED_PROPS[widget.type] ?? []) if (!(key in widget.props)) issues.push({ location, message: `缺少必要配置 ${key}` })
-      if (widget.source && !sources.has(widget.source)) issues.push({ location, message: `数据源 ${widget.source} 不存在` })
+      if (!spec) issues.push({ location, message: `Unknown widget type ${widget.type}` })
+      for (const key of REQUIRED_PROPS[widget.type] ?? []) if (!(key in widget.props)) issues.push({ location, message: `Missing required setting ${key}` })
+      if (widget.source && !sources.has(widget.source)) issues.push({ location, message: `Data source ${widget.source} does not exist` })
       const regions = regionsOf(page)
-      if (regions.length && !regions.some(row => row.id === widget.region)) issues.push({ location, message: '组件不在本页模板的任何区域里' })
+      if (regions.length && !regions.some(row => row.id === widget.region)) issues.push({ location, message: 'The widget is outside every region of this page template' })
       const item = page.layout.find(row => row.i === widget.id)
-      if (item && item.x + item.w > spanOf(page, widget.region)) issues.push({ location, message: `宽度超出所在区域（${spanOf(page, widget.region)} 列）` })
+      if (item && item.x + item.w > spanOf(page, widget.region)) issues.push({ location, message: `Wider than its region (${spanOf(page, widget.region)} columns)` })
       const usedVariables = [widget.props.variable, widget.props.filter_variable, widget.on_select?.set_variable].filter(Boolean) as string[]
-      for (const id of usedVariables) if (!variables.has(id)) issues.push({ location, message: `变量 ${id} 不存在` })
-      for (const id of [widget.props.navigate, widget.on_select?.navigate].filter(Boolean) as string[]) if (!pages.has(id)) issues.push({ location, message: `目标页面 ${id} 不存在` })
+      for (const id of usedVariables) if (!variables.has(id)) issues.push({ location, message: `Variable ${id} does not exist` })
+      for (const id of [widget.props.navigate, widget.on_select?.navigate].filter(Boolean) as string[]) if (!pages.has(id)) issues.push({ location, message: `Target page ${id} does not exist` })
     }
   }
   return issues
@@ -59,7 +59,7 @@ export function duplicateWidget(page: Page, widget: Widget, allWidgetIds: string
   const id = `${prefix}${index}`
   const current = page.layout.find(row => row.i === widget.id)
   return {
-    widget: { ...structuredClone(widget), id, title: `${widget.title}（副本）` },
+    widget: { ...structuredClone(widget), id, title: `${widget.title} (copy)` },
     layout: current ? { ...current, i: id, x: Math.min(23, current.x + 1), y: current.y + 1 } : { i: id, x: 0, y: 0, w: specOf(widget.type)?.w ?? 8, h: specOf(widget.type)?.h ?? 6 },
   }
 }
@@ -83,7 +83,7 @@ export function pickWidgets(result: AutobindResult, keep: Set<string>): { data_s
 
 type Binding = { path: string; props: Record<string, unknown> } | { error: string }
 const first = (schema: OutputSchema, ...roles: string[]) => roles.map(role => schema.columns.find(col => col.role === role)).find(Boolean)
-const metricFormat = (col?: OutputColumn) => !col ? 'number' : /rate|ratio|率|比例/i.test(col.name + col.label) ? 'percent' : 'number'
+const metricFormat = (col?: OutputColumn) => !col ? 'number' : /rate|ratio|share|percent/i.test(col.name + col.label) ? 'percent' : 'number'
 
 /**
  * Fill a widget from what a query returns: the result's shape decides which widgets fit, column roles fill the fields.
@@ -95,30 +95,30 @@ export function bindFromSchema(type: string, schema: OutputSchema): Binding {
   const grouped = schema.shape === '2d' || schema.shape === '3d'
   switch (type) {
     case 'kpi_strip':
-      if (schema.shape !== 'single') return { error: '指标条需要单行指标的查询（不分组的汇总）' }
+      if (schema.shape !== 'single') return { error: 'A KPI strip needs a single-row query (an ungrouped summary)' }
       return { path: '', props: { items: schema.columns.filter(col => col.role === 'metric').map(col => ({ label: col.label, path: `${schema.path}.0.${col.name}`, format: metricFormat(col) })) } }
     case 'table':
       return { path: schema.path, props: { columns: schema.columns.filter(col => col.role !== 'identifier').map(col => ({ label: col.label, field: col.name, format: col.role === 'time' ? 'date' : col.role === 'metric' ? metricFormat(col) : 'text' })), max_rows: 50 } }
     case 'rank_bars':
-      if (!grouped || !label || !metric) return { error: '排行条需要按字段分组、带指标的查询' }
+      if (!grouped || !label || !metric) return { error: 'Rank bars need a query grouped by a field, with a metric' }
       return { path: schema.path, props: { label_field: label.name, value_field: metric.name, max_rows: 10, format: metricFormat(metric) } }
     case 'donut_chart': {
       // Only a few-valued category reads as shares; names and ids (cities, machines) belong in a ranking.
       const category = first(schema, 'category')
-      if (!grouped || !category || !metric) return { error: '环形图需要按“类别”列（取值只有几种，如高/中/低）分组的查询；按城市、设备等分组请用横向排行条' }
+      if (!grouped || !category || !metric) return { error: 'A donut chart needs a query grouped by a category column with few values (such as high/medium/low); use rank bars for cities, machines and similar' }
       return { path: schema.path, props: { category_field: category.name, value_field: metric.name, center_label: metric.label } }
     }
     case 'geo_map': {
       const lat = first(schema, 'latitude'), lng = first(schema, 'longitude')
-      if (!lat || !lng) return { error: '这条查询的结果没有经纬度列，不能画地图' }
+      if (!lat || !lng) return { error: 'This query has no latitude/longitude columns, so it cannot be mapped' }
       return { path: schema.path, props: { lat_field: lat.name, lng_field: lng.name, label_field: (label ?? lat).name, size_field: metric?.name ?? '', color_field: first(schema, 'category')?.name ?? '',
         key_field: first(schema, 'dimension', 'identifier')?.name ?? 'id' } }
     }
     case 'bar_chart':
-      if (!grouped || !label) return { error: '柱状图需要按字段分组的查询' }
+      if (!grouped || !label) return { error: 'A bar chart needs a query grouped by a field' }
       return { path: schema.path, props: { x_field: first(schema, 'dimension')?.name ?? label.name, series: schema.columns.filter(col => col.role === 'metric').map(col => ({ label: col.label, value_field: col.name })) } }
     default:
-      return { error: '这个组件不支持按查询自动填写' }
+      return { error: 'This widget cannot be filled from a query automatically' }
   }
 }
 

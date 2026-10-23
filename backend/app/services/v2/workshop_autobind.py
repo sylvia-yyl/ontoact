@@ -117,8 +117,8 @@ def _role(name, data_type, values, distinct, total, ids_by_type, own_type) -> tu
 def _metric_label(metric: dict, prof: dict) -> str:
     field = next((f for f in prof["fields"] if f["name"] == metric.get("field")), None)
     if metric["op"] == "count":
-        return f"{prof['label']}数"
-    return f"{field['label'] if field else metric.get('field')}{'合计' if metric['op'] == 'sum' else '比例' if field and field['role'] == 'flag' else '平均'}"
+        return f"{prof['label']} count"
+    return f"{'Total' if metric['op'] == 'sum' else 'Share' if field and field['role'] == 'flag' else 'Average'} {field['label'] if field else metric.get('field')}"
 
 
 def rule_plan(prof: dict) -> dict:
@@ -136,7 +136,7 @@ def rule_plan(prof: dict) -> dict:
     for field in sorted(by_role("category"), key=lambda f: f["distinct"])[:4]:
         breakdowns.append({"kind": "donut" if field["distinct"] <= 6 else "rank", "field": field["name"], "metric": {"op": "count", "field": None, "format": "number"}})
     table = [f["name"] for f in prof["fields"] if f["role"] in ("time", "category", "measure", "flag", "key")][:6]
-    plan = {"page_title": f"{prof['label']}总览", "kpis": kpis, "scene": scene, "breakdowns": breakdowns, "table": table}
+    plan = {"page_title": f"{prof['label']} overview", "kpis": kpis, "scene": scene, "breakdowns": breakdowns, "table": table}
     _titles(plan, prof)
     return plan
 
@@ -150,10 +150,10 @@ def _titles(plan: dict, prof: dict):
     if plan.get("scene"):
         scene = plan["scene"]
         dim = next(d for d in prof["dimensions"] if d["field"] == scene["dimension"])
-        scene.setdefault("title", f"按{dim['label']}的{_metric_label(scene['metric'], prof)}")
+        scene.setdefault("title", f"{_metric_label(scene['metric'], prof)} by {dim['label']}")
     for item in plan["breakdowns"]:
-        item.setdefault("title", f"按{label(item['field'])}的{_metric_label(item['metric'], prof)}")
-    plan.setdefault("table_title", f"最新{prof['label']}" if prof["time_field"] else f"{prof['label']}明细")   # "latest" only when there is a time
+        item.setdefault("title", f"{_metric_label(item['metric'], prof)} by {label(item['field'])}")
+    plan.setdefault("table_title", f"Latest {prof['label']}" if prof["time_field"] else f"{prof['label']} details")   # "latest" only when there is a time
 
 
 METRIC_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["op", "field", "format", "label"],
@@ -209,27 +209,27 @@ def check_plan(plan: dict, prof: dict) -> tuple[dict, list[str]]:
         field = fields.get(metric.get("field") or "")
         if field and field["role"] in ("measure", "flag"):
             return True
-        dropped.append(f"{where}: {metric['op']}({metric.get('field')}) 不是可汇总的数值字段")
+        dropped.append(f"{where}: {metric['op']}({metric.get('field')}) is not a numeric field that can be aggregated")
         return False
 
-    clean = {"page_title": plan.get("page_title") or f"{prof['label']}总览", "reasoning": plan.get("reasoning", "")}
+    clean = {"page_title": plan.get("page_title") or f"{prof['label']} overview", "reasoning": plan.get("reasoning", "")}
     if plan.get("table_title"):
         clean["table_title"] = plan["table_title"]
-    clean["kpis"] = [m for i, m in enumerate(plan.get("kpis") or []) if metric_ok(m, f"指标 {i + 1}")][:6] or [{"op": "count", "field": None, "format": "number"}]
+    clean["kpis"] = [m for i, m in enumerate(plan.get("kpis") or []) if metric_ok(m, f"KPI {i + 1}")][:6] or [{"op": "count", "field": None, "format": "number"}]
     scene = plan.get("scene")
     if scene and (scene.get("dimension") not in dims or (scene["kind"] == "map" and not (dims[scene["dimension"]]["lat"] and dims[scene["dimension"]]["lng"]))):
-        dropped.append(f"场景: {scene.get('kind')}({scene.get('dimension')}) 不是可用的维度" + ("或没有坐标" if scene.get("kind") == "map" else ""))
+        dropped.append(f"scene: {scene.get('kind')}({scene.get('dimension')}) is not a usable dimension" + (" or has no coordinates" if scene.get("kind") == "map" else ""))
         scene = None
-    clean["scene"] = scene if scene and metric_ok(scene["metric"], "场景") else None
+    clean["scene"] = scene if scene and metric_ok(scene["metric"], "scene") else None
     clean["breakdowns"] = []
     for i, item in enumerate(plan.get("breakdowns") or []):
         field = fields.get(item.get("field") or "")
         if not field or field["role"] not in ("category", "key"):
-            dropped.append(f"分组 {i + 1}: {item.get('field')} 不是类别或维度字段")
-        elif metric_ok(item["metric"], f"分组 {i + 1}"):
+            dropped.append(f"breakdown {i + 1}: {item.get('field')} is not a category or dimension field")
+        elif metric_ok(item["metric"], f"breakdown {i + 1}"):
             clean["breakdowns"].append(item)
     clean["table"] = [name for name in plan.get("table") or [] if name in fields][:6]
-    dropped += [f"表格: {name} 不存在" for name in plan.get("table") or [] if name not in fields]
+    dropped += [f"table: {name} does not exist" for name in plan.get("table") or [] if name not in fields]
     _titles(clean, prof)
     return clean, dropped
 
@@ -258,14 +258,14 @@ def compile_plan(plan: dict, prof: dict, prefix: str) -> dict:
         widgets.append({**widget, "region": region, "path": widget.get("path", "groups"), "on_select": None})
         layout.append({"i": widget["id"], **_place([i for i, wd in zip(layout, widgets) if wd["region"] == region], w, h)})
 
-    sources.append({"id": f"{prefix}totals", "kind": "aggregate", "label": f"{prof['label']}（合计）", "object_type": t, "group_by": [], "time_field": time_field,
+    sources.append({"id": f"{prefix}totals", "kind": "aggregate", "label": f"{prof['label']} (totals)", "object_type": t, "group_by": [], "time_field": time_field,
                     "metrics": [metric(m, f"k{i}") for i, m in enumerate(plan["kpis"])]})
     add({"id": f"{prefix}kpis", "type": "kpi_strip", "title": "", "source": f"{prefix}totals",
          "props": {"items": [{"label": m["label"], "path": f"groups.0.k{i}", "format": m["format"]} for i, m in enumerate(plan["kpis"])]}}, "kpi", 24, 3)
     if scene := plan.get("scene"):
         dim = next(d for d in prof["dimensions"] if d["field"] == scene["dimension"])
         select = [p for p in (dim["name_field"], dim["lat"], dim["lng"]) if p]
-        sources.append({"id": f"{prefix}by_{dim['field']}", "kind": "aggregate", "label": f"按{dim['label']}汇总", "object_type": t, "group_by": [dim["field"]],
+        sources.append({"id": f"{prefix}by_{dim['field']}", "kind": "aggregate", "label": f"By {dim['label']}", "object_type": t, "group_by": [dim["field"]],
                         "time_field": time_field, "metrics": [metric(scene["metric"], "value")],
                         "join": {"object_type": dim["object_type"], "on": dim["field"], "select": select} if select else None})
         name = dim["name_field"] or dim["field"]
@@ -279,7 +279,7 @@ def compile_plan(plan: dict, prof: dict, prefix: str) -> dict:
         source = f"{prefix}by_{item['field']}_{i}"
         dim = next((d for d in prof["dimensions"] if d["field"] == item["field"]), None)
         join = {"object_type": dim["object_type"], "on": item["field"], "select": [dim["name_field"]]} if dim and dim["name_field"] else None
-        sources.append({"id": source, "kind": "aggregate", "label": f"按{label(item['field'])}汇总", "object_type": t, "group_by": [item["field"]],
+        sources.append({"id": source, "kind": "aggregate", "label": f"By {label(item['field'])}", "object_type": t, "group_by": [item["field"]],
                         "time_field": time_field, "metrics": [metric(item["metric"], "value")], "join": join})
         category = dim["name_field"] if join else item["field"]
         if item["kind"] == "donut":

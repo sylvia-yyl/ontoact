@@ -7,7 +7,7 @@ import { regionsOf, type Region } from './templates'
 const ROW = 32
 
 type CanvasProps = { page: Page; rt: Runtime; editing?: boolean; selected?: string; onSelect?: (id: string) => void; onLayout?: (layout: LayoutItem[]) => void
-  /** Editor only: the region new widgets go to, and the per-region "+ 组件" button. */
+  /** Editor only: the region new widgets go to, and the per-region "+ Widget" button. */
   activeRegion?: string | null; onActiveRegion?: (id: string) => void; onAddToRegion?: (id: string) => void }
 
 /** One page of widgets.  Free pages are one 24-column grid; templated pages are regions, each its own grid as wide as its span. */
@@ -32,9 +32,9 @@ function RegionBox({ region, editing, activeRegion, onActiveRegion, onAddToRegio
     className={`min-w-0 rounded-lg border bg-white/60 ${active ? 'border-blue-400 ring-2 ring-blue-100' : 'border-slate-200'}`}>
     <header className="flex items-center gap-2 px-3 pt-2 text-xs">
       <span className="rounded bg-blue-50 px-1.5 py-0.5 font-semibold tracking-wide text-blue-700">{region.tag}</span><span className="text-slate-600">{region.label}</span>
-      {editing && <button type="button" className="ml-auto text-blue-700 hover:underline" onClick={() => onAddToRegion?.(region.id)}>＋ 组件</button>}
+      {editing && <button type="button" className="ml-auto text-blue-700 hover:underline" onClick={() => onAddToRegion?.(region.id)}>+ Widget</button>}
     </header>
-    {rest.widgets.length === 0 && editing && <p className="m-3 rounded border border-dashed p-4 text-center text-xs text-slate-400">点“＋ 组件”或先选中本区域，再从左侧组件库添加</p>}
+    {rest.widgets.length === 0 && editing && <p className="m-3 rounded border border-dashed p-4 text-center text-xs text-slate-400">Click “+ Widget”, or select this region and add one from the library</p>}
     <WidgetGrid {...rest} editing={editing} cols={region.span} />
   </section>
 }

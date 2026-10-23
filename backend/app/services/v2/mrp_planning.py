@@ -332,7 +332,7 @@ def plan_portfolio(inputs: dict) -> dict:
                       "expected_ship_date": day_iso(row["due_day"]), "due_month": day_iso(row["due_day"])[:7],
                       "product_line_name": plan.lines[row["product_line"]]["name"], "at_risk": row["status"] != "on_time",
                       "root_cause_names": [plan.items.get(part, {}).get("name", part) for part in row["root_cause_items"]]
-                                          or (["产能"] if "capacity_conflict" in row["reason_codes"] else []),
+                                          or (["Capacity"] if "capacity_conflict" in row["reason_codes"] else []),
                       "quantity": row["quantity"], "due_day": row["due_day"], "ship_day": row["ship_day"], "status": row["status"],
                       "delay_days": row["delay_days"], "revenue": row["revenue"], "root_cause_items": row["root_cause_items"],
                       "reason_codes": row["reason_codes"], "policy": row["policy"]} for row in base_events),

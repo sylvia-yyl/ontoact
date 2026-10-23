@@ -411,7 +411,7 @@ def _candidate_specs(prepared: dict, baseline: dict) -> list[dict]:
             if row["item"] == item and row["expedite_available_at"] is not None and row["expedite_available_at"] < row["available_at"]:
                 applicable_expedite.append(row["id"])
                 specs.append({"id": f"expedite:{row['id']}", "kind": "expedite", "item": item, "supplier": row["supplier"],
-                              "label": f"加急 {row['id']}", "policy": {"expedite": [row["id"]]},
+                              "label": f"Expedite {row['id']}", "policy": {"expedite": [row["id"]]},
                               "actions": [{"action_type": "expedite_supply_commitment", "commitment_id": row["id"],
                                            "available_at": row["expedite_available_at"].isoformat()}]})
         for row in prepared["options"]:
@@ -420,21 +420,21 @@ def _candidate_specs(prepared: dict, baseline: dict) -> list[dict]:
             if row["qualified"]:
                 applicable_buy.append(row["id"])
                 specs.append({"id": f"buy_alternate:{row['id']}", "kind": "buy_alternate", "item": item, "supplier": row["supplier"],
-                              "label": f"向 {row['supplier']} 采购替代料", "policy": {"buy": [row["id"]]},
+                              "label": f"Buy substitute from {row['supplier']}", "policy": {"buy": [row["id"]]},
                               "actions": [{"action_type": "create_purchase_order", "option_id": row["id"], "supplier": row["supplier"], "item": item}]})
             else:
                 specs.append({"id": f"qualify_alternate:{row['id']}", "kind": "qualify_alternate", "item": item, "supplier": row["supplier"],
-                              "label": f"认证 {row['supplier']} 后采购", "policy": {"qualify": [row["id"]]},
+                              "label": f"Qualify {row['supplier']}, then buy", "policy": {"qualify": [row["id"]]},
                               "hard_constraints": [{"code": "supplier_not_qualified", "subject": f"SupplySource:{row['id']}"}],
                               "actions": [{"action_type": "qualify_supplier", "option_id": row["id"], "supplier": row["supplier"], "item": item}]})
-        specs.append({"id": f"reallocate:{item}", "kind": "reallocate", "item": item, "label": f"按收入密度重新分配 {item}",
+        specs.append({"id": f"reallocate:{item}", "kind": "reallocate", "item": item, "label": f"Reallocate {item} by revenue density",
                       "policy": {"release_reservations_for": [item], "reallocate_item": item},
                       "actions": [{"action_type": "reprioritize_allocation", "item": item, "policy": "revenue_per_unit_desc",
                                    "released_reservations": [row["id"] for row in prepared["reservations"] if row["item"] == item]}]})
     has_alternate_resources = any(len(row["resources"]) > 1 for row in prepared["demands"])
     if (applicable_expedite or applicable_buy) and has_alternate_resources:
         specs.append({"id": "combined:expedite+alternate+replan", "kind": "combined", "item": ",".join(problem_items),
-                      "label": "加急 + 合格替代 + 跨产线改排",
+                      "label": "Expedite + qualified substitute + cross-line reschedule",
                       "policy": {"expedite": applicable_expedite, "buy": applicable_buy, "replan": True},
                       "actions": [action for spec in specs if spec["kind"] in {"expedite", "buy_alternate"} for action in spec["actions"]]
                                  + [{"action_type": "reschedule_work_orders", "policy": "earliest_finish_qualified_resource"}]})

@@ -109,9 +109,9 @@ def build_context(ontology_id: str, *, metadata_revision_id: str | None = None, 
     if consistency is None:
         consistency = ConsistencyRequest()
     if consistency.mode not in {"live", "pinned", "snapshot"}:
-        raise DataPlaneError("INVALID_CONSISTENCY", "一致性模式必须是 live、pinned 或 snapshot")
+        raise DataPlaneError("INVALID_CONSISTENCY", "Consistency must be live, pinned or snapshot")
     if consistency.mode == "snapshot" and not consistency.snapshot_id:
-        raise DataPlaneError("SNAPSHOT_REQUIRED", "snapshot 模式必须提供 snapshot_id")
+        raise DataPlaneError("SNAPSHOT_REQUIRED", "Snapshot consistency requires a snapshot_id")
     return ExecutionContext(
         ontology_id=ontology_id,
         metadata_revision_id=metadata_revision_id,
@@ -131,8 +131,8 @@ def check_capability(capabilities: AdapterCapabilities, context: ExecutionContex
     if not supported:
         raise DataPlaneError(
             "CAPABILITY_UNSUPPORTED",
-            f"adapter {capabilities.adapter} 不支持 {context.consistency.mode} 一致性读取",
-            next_action="切换兼容的数据源或显式允许降级",
+            f"Adapter {capabilities.adapter} does not support {context.consistency.mode} reads",
+            next_action="Use a compatible data source or explicitly allow a weaker consistency",
             context_id=context.context_id,
             details={"operation": operation, "adapter": capabilities.adapter},
         )
@@ -182,9 +182,9 @@ def decode_cursor(cursor: str, context: ExecutionContext) -> dict[str, Any]:
             raise ValueError("signature")
         payload = json.loads(payload_raw.decode())
     except Exception as exc:
-        raise DataPlaneError("INVALID_CURSOR", "分页游标无效或已损坏", next_action="重新开始分页") from exc
+        raise DataPlaneError("INVALID_CURSOR", "The page cursor is invalid or damaged", next_action="Start paging again") from exc
     if payload.get("context_id") != context.context_id or payload.get("metadata_digest") != context.metadata_digest or payload.get("permission_digest") != context.permission_digest or payload.get("view_id") != context.view_id or payload.get("snapshot_id") != context.snapshot_id:
-        raise DataPlaneError("CONTEXT_MISMATCH", "分页游标与当前元数据、权限或数据视图不一致", next_action="重新开始分页", context_id=context.context_id)
+        raise DataPlaneError("CONTEXT_MISMATCH", "The page cursor no longer matches the metadata, permissions or data view", next_action="Start paging again", context_id=context.context_id)
     return dict(payload.get("position") or {})
 
 

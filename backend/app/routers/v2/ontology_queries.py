@@ -148,7 +148,7 @@ def create_query(ontology_id: str, body: CreateQuery, db: Session = Depends(get_
     definition, schema = _checked(db, ontology_id, body.definition)
     row = OntologyQuery(ontology_id=ontology_id, owner_id=user.id, api_name=body.api_name, name=body.name, description=body.description, latest_version="")
     db.add(row); db.flush()
-    service.publish(db, row, definition, schema, "auto", body.note or "首次发布", user)
+    service.publish(db, row, definition, schema, "auto", body.note or "First release", user)
     db.commit()
     return _summary(db, row)
 

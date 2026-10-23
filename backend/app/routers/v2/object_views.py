@@ -103,7 +103,7 @@ def get_object_view(ontology_id: str, object_type: str, db: Session = Depends(ge
     digest = metadata_digest(load_sql_metadata(db, ontology_id))
     row = db.query(ObjectViewConfiguration).filter_by(ontology_id=ontology_id, object_type=object_type).order_by(ObjectViewConfiguration.version.desc()).first()
     compatible = bool(row and row.metadata_digest == digest)
-    standard = {"tabs": [{"id": "properties", "title": "属性", "properties": [name for name in type_meta.properties if name in visible_properties], "layout": "list", "show_in_panel": True}]}
+    standard = {"tabs": [{"id": "properties", "title": "Properties", "properties": [name for name in type_meta.properties if name in visible_properties], "layout": "list", "show_in_panel": True}]}
     configured = _filter_view_schema(row.view_schema, visible_properties) if compatible else None
     return {"object_type": object_type, "standard": standard, "configured": configured,
             "configured_version": row.version if compatible else None, "configuration_stale": bool(row and not compatible)}

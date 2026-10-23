@@ -17,7 +17,7 @@ router = APIRouter(dependencies=[Depends(get_current_user)])
 def scope(db, oid, user):
     obj = db.get(OntologyProject, oid)
     if not obj or (user.role != 'admin' and obj.created_by != user.id):
-        raise HTTPException(404, '本体不存在或无访问权限')
+        raise HTTPException(404, 'Ontology not found or not accessible')
     return obj
 
 

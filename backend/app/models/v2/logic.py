@@ -1,4 +1,4 @@
-"""PRD v1.1 Ontology Logic & State Machine 模型"""
+"""Ontology logic rules and state machines."""
 import uuid
 from datetime import datetime, timezone
 from sqlalchemy import String, DateTime, JSON, Text, Boolean, Integer, ForeignKey
@@ -7,7 +7,7 @@ from app.database import Base
 
 
 class OntologyLogicRule(Base):
-    """逻辑规则 — 六大类型: validation/mapping/inference/state/security/automation"""
+    """A logic rule: validation, mapping, inference, state, security or automation."""
     __tablename__ = "v2_ontology_logic_rules"
 
     id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -30,7 +30,7 @@ class OntologyLogicRule(Base):
 
 
 class OntologyStateMachine(Base):
-    """状态机 — 控制实体状态流转"""
+    """A state machine that controls the allowed status transitions of a type."""
     __tablename__ = "v2_ontology_state_machines"
 
     id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))

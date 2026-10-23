@@ -21,9 +21,9 @@ SEMVER = re.compile(r"^(\d+)\.(\d+)\.(\d+)$")
 NUMERIC = {"double", "float", "integer", "long", "decimal", "short"}
 TIMES = {"timestamp", "datetime", "date"}
 LAT, LNG = {"latitude", "lat"}, {"longitude", "lng", "lon"}
-ALERT_COLUMNS = [("id", "string", "identifier", "告警"), ("rule_name", "string", "dimension", "规则"), ("severity", "string", "dimension", "严重度"),
-                 ("status", "string", "dimension", "状态"), ("subject_type", "string", "dimension", "对象类型"), ("subject_id", "string", "dimension", "对象"),
-                 ("window_end", "timestamp", "time", "时间")]
+ALERT_COLUMNS = [("id", "string", "identifier", "Alert"), ("rule_name", "string", "dimension", "Rule"), ("severity", "string", "dimension", "Severity"),
+                 ("status", "string", "dimension", "Status"), ("subject_type", "string", "dimension", "Object type"), ("subject_id", "string", "dimension", "Object"),
+                 ("window_end", "timestamp", "time", "Time")]
 
 
 class QueryError(Exception):
@@ -93,7 +93,7 @@ def output_schema(db, ontology_id: str, source: dict) -> dict:
         return {"shape": "table", "path": "alerts", "columns": [{"name": n, "type": t, "role": r, "label": l} for n, t, r, l in ALERT_COLUMNS]}
     if kind == "object_set":
         names = source.get("select") or workshop_sources.object_type_properties(metadata, source["object_type"])
-        return {"shape": "table", "path": "objects", "columns": [{"name": "id", "type": "string", "role": "identifier", "label": "编号"}]
+        return {"shape": "table", "path": "objects", "columns": [{"name": "id", "type": "string", "role": "identifier", "label": "ID"}]
                 + [column(source["object_type"], name) for name in names]}
     columns = [column(source["object_type"], name, "dimension") for name in source["group_by"]]
     if join := source.get("join"):
@@ -105,7 +105,7 @@ def output_schema(db, ontology_id: str, source: dict) -> dict:
         columns.append({"name": band["into"], "type": "string", "role": "category", "label": band["into"]})
     for metric in source["metrics"]:
         base = labels.get(source["object_type"], {}).get(metric.get("property") or "", metric.get("property") or "")
-        label = {"count": "数量", "sum": f"{base}合计", "avg": f"{base}平均", "min": f"{base}最小", "max": f"{base}最大", "exact_distinct": f"{base}去重数"}[metric["op"]]
+        label = {"count": "Count", "sum": f"Total {base}", "avg": f"Average {base}", "min": f"Min {base}", "max": f"Max {base}", "exact_distinct": f"Distinct {base}"}[metric["op"]]
         columns.append({"name": metric["key"], "type": "double", "role": "metric", "label": metric.get("label") or label})
     shape = {0: "single", 1: "2d", 2: "3d"}.get(len(source["group_by"]), "table")
     return {"shape": shape, "path": "groups", "columns": columns}
@@ -118,16 +118,16 @@ def compatibility(previous: OntologyQueryVersion | None, definition: dict, schem
     breaking, added = [], []
     old = {c["name"]: c for c in previous.output_schema["columns"]}
     new = {c["name"]: c for c in schema["columns"]}
-    breaking += [f"删除了输出列 {name}" for name in old if name not in new]
-    breaking += [f"输出列 {name} 的类型从 {old[name]['type']} 改成了 {new[name]['type']}" for name in old if name in new and new[name]["type"] != old[name]["type"]]
+    breaking += [f"removed output column {name}" for name in old if name not in new]
+    breaking += [f"changed the type of output column {name} from {old[name]['type']} to {new[name]['type']}" for name in old if name in new and new[name]["type"] != old[name]["type"]]
     if previous.output_schema["shape"] != schema["shape"]:
-        breaking.append(f"结果形状从 {previous.output_schema['shape']} 改成了 {schema['shape']}")
+        breaking.append(f"changed the result shape from {previous.output_schema['shape']} to {schema['shape']}")
     old_params = {p["name"]: p for p in previous.definition.get("params", [])}
     new_params = {p["name"]: p for p in definition.get("params", [])}
-    breaking += [f"删除了参数 {name}" for name in old_params if name not in new_params]
-    breaking += [f"新增了必填参数 {name}" for name, p in new_params.items() if name not in old_params and p.get("required")]
-    added += [f"新增输出列 {name}" for name in new if name not in old]
-    added += [f"新增可选参数 {name}" for name, p in new_params.items() if name not in old_params and not p.get("required")]
+    breaking += [f"removed parameter {name}" for name in old_params if name not in new_params]
+    breaking += [f"added required parameter {name}" for name, p in new_params.items() if name not in old_params and p.get("required")]
+    added += [f"added output column {name}" for name in new if name not in old]
+    added += [f"added optional parameter {name}" for name, p in new_params.items() if name not in old_params and not p.get("required")]
     return breaking, added
 
 
@@ -135,7 +135,7 @@ def next_version(previous: OntologyQueryVersion | None, bump: str, breaking: lis
     if previous is None:
         return "1.0.0"
     if breaking and bump not in ("major", "auto"):
-        raise QueryError("breaking_change", "这些改动不兼容，必须发布新的主版本", 409, {"breaking": breaking})
+        raise QueryError("breaking_change", "These changes are breaking; publish a new major version", 409, {"breaking": breaking})
     major, minor, patch = previous.major, previous.minor, previous.patch
     level = bump if bump != "auto" else "major" if breaking else "minor" if added else "patch"
     return {"major": f"{major + 1}.0.0", "minor": f"{major}.{minor + 1}.0", "patch": f"{major}.{minor}.{patch + 1}"}[level]

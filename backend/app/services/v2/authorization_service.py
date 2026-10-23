@@ -119,7 +119,7 @@ def _condition_matches(record: dict[str, Any], condition: dict[str, Any], resour
         return actual == expected
     if operator in {"not_equals", "!=", "≠"}:
         return actual != expected
-    if operator in {"in", "belongs_to", "属于"}:
+    if operator in {"in", "belongs_to"}:
         return actual in (expected if isinstance(expected, (list, tuple, set)) else [expected])
     if operator in {"not_in"}:
         return actual not in (expected if isinstance(expected, (list, tuple, set)) else [expected])
@@ -299,7 +299,7 @@ def resolve_projection(
     """
     project = db.query(OntologyProject).filter(OntologyProject.id == context.ontology_id).first()
     if not project:
-        raise AuthorizationError("NOT_FOUND", "本体不存在")
+        raise AuthorizationError("NOT_FOUND", "Ontology not found")
     role = principal_role or context.principal_role
     resource_aliases, resource_ids_by_api_name = _load_resource_aliases(db, context, project)
     policies = preloaded_policies if preloaded_policies is not None else load_applicable_policies(db, context, principal_role)
@@ -507,7 +507,7 @@ def filter_records(projection: AuthorizationProjection, records: Iterable[dict[s
 def require_visible(projection: AuthorizationProjection, record: dict[str, Any]) -> dict[str, Any]:
     visible = redact_record(projection, record)
     if visible is None:
-        raise AuthorizationError("NOT_FOUND", "对象不存在")
+        raise AuthorizationError("NOT_FOUND", "Object not found")
     return visible
 
 

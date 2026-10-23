@@ -18,13 +18,13 @@ from hashlib import sha256
 import httpx
 
 DEFAULT_MODEL = "gpt-4.1"
-# ASCII-only boundary: \w would treat CJK characters as word characters and split "提升198,286.78".
+# ASCII-only boundary: \w would also match non-Latin letters glued to a number.
 NUMBER = re.compile(r"(?<![A-Za-z0-9_.])-?\$?\d[\d,]*(?:\.\d+)?%?")
 SYSTEM = (
     "You are a manufacturing planning analyst. Explain why the proposed action should or should not be taken, "
     "using ONLY the evidence provided. Every claim must cite the evidence ids it relies on. Do not invent numbers, "
     "orders, parts or suppliers; copy figures exactly as they appear in the cited evidence. Mention trade-offs "
-    "(cost, harmed orders, irreversible supplier notifications). Evidence labelled 基线 describes the situation BEFORE the action. Answer in Chinese."
+    "(cost, harmed orders, irreversible supplier notifications). Evidence labelled Baseline describes the situation BEFORE the action. Answer in English."
 )
 SCHEMA = {
     "type": "object", "additionalProperties": False, "required": ["summary", "reasoning", "risks"],
@@ -51,30 +51,30 @@ def build_evidence(outputs: dict, candidate: dict) -> list[dict]:
     def add(label, value):
         evidence.append({"id": f"E{len(evidence) + 1}", "label": label, "value": value})
 
-    add("货币单位", "USD（金额均为美元）")
-    add("基线季度预计收入", totals.get("projected_revenue"))
-    add("季度收入目标（全部按期交付）", totals.get("revenue_target"))
-    add("基线 OTIF", totals.get("otif"))
-    add("基线有风险的需求事件数", totals.get("at_risk"))
-    add("候选动作", candidate["label"])
-    add("执行后季度预计收入", candidate.get("quarter_revenue_after"))
-    add("季度收入变化", candidate.get("quarter_revenue_delta"))
-    add("执行后 OTIF", candidate.get("otif_after"))
-    add("执行后有风险的需求事件数", candidate.get("at_risk_after"))
-    add("增量成本（加急费/返工/采购）", candidate.get("incremental_cost"))
-    add("由风险转为按期的订单", [row["demand_id"] for row in candidate.get("protected_orders", [])])
-    add("由按期转为有风险的订单", [row["demand_id"] for row in candidate.get("harmed_orders", [])])
+    add("Currency", "USD (all amounts are US dollars)")
+    add("Baseline projected quarterly revenue", totals.get("projected_revenue"))
+    add("Quarterly revenue target (everything on time)", totals.get("revenue_target"))
+    add("Baseline OTIF", totals.get("otif"))
+    add("Baseline demand events at risk", totals.get("at_risk"))
+    add("Candidate action", candidate["label"])
+    add("Projected quarterly revenue after the action", candidate.get("quarter_revenue_after"))
+    add("Change in quarterly revenue", candidate.get("quarter_revenue_delta"))
+    add("OTIF after the action", candidate.get("otif_after"))
+    add("Demand events at risk after the action", candidate.get("at_risk_after"))
+    add("Incremental cost (expedite, rework, purchasing)", candidate.get("incremental_cost"))
+    add("Orders moved from at risk to on time", [row["demand_id"] for row in candidate.get("protected_orders", [])])
+    add("Orders moved from on time to at risk", [row["demand_id"] for row in candidate.get("harmed_orders", [])])
     if candidate.get("capital_deferred") is not None:
-        add("推迟到货而延后支付的采购金额", candidate["capital_deferred"])
+        add("Purchase spend deferred by later deliveries", candidate["capital_deferred"])
     for action in candidate.get("actions", [])[:12]:
-        add(f"动作 {action['action_type']}", {k: v for k, v in action.items() if k != "action_type"})
+        add(f"Action {action['action_type']}", {k: v for k, v in action.items() if k != "action_type"})
     involved = {candidate.get("item")} | {a.get("item") for a in candidate.get("actions", [])}
     for row in (outputs.get("coverage") or {}).get("rows", []):
         if row["item"] in involved or (row.get("critical") and candidate.get("product_line") in row.get("lines", [])):
-            add(f"物料 {row['name']}（{row['item']}）基线覆盖（未执行本动作时，全年计划期）", {"on_hand": row["on_hand"], "first_shortage_week": row["first_shortage_week"],
+            add(f"Baseline coverage of {row['name']} ({row['item']}) without this action, full planning horizon", {"on_hand": row["on_hand"], "first_shortage_week": row["first_shortage_week"],
                                                        "lowest_projected_balance": min(row["projected"]), "planned_orders": len(row["planned_orders"])})
     if candidate.get("hard_constraints"):
-        add("未满足的硬约束", candidate["hard_constraints"])
+        add("Hard constraints not met", candidate["hard_constraints"])
     return evidence
 
 
@@ -106,7 +106,7 @@ def verify(answer: dict, evidence: list[dict]) -> dict:
             allowed = [n for ref in item["evidence_ids"] for n in _numbers(by_id[ref]["value"])]
             for number in _numbers(re.sub(r"E\d+", "", item["claim"])):
                 if abs(number) <= 12 and float(number).is_integer():
-                    continue  # small counts/ordinals ("2 个 PO", "第 3 周") are checked via the cited ids
+                    continue  # small counts/ordinals ("2 POs", "week 3") are checked via the cited ids
                 ok = any(abs(number - a) <= max(0.5, abs(a) * 0.005) or abs(number - a * 100) <= 0.6 or abs(number * 1000 - a) <= abs(a) * 0.01
                          or abs(number * 10000 - a) <= abs(a) * 0.01 for a in allowed)
                 if not ok:

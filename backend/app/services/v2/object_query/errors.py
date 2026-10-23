@@ -34,6 +34,6 @@ class ObjectQueryError(ValueError):
             "path": self.issue.path,
             "message": self.issue.message,
             "details": self.issue.details,
-            "next_action": "检查请求上下文和数据源状态后重试",
+            "next_action": "Check the request context and data source status, then retry",
             "context_id": self.context_id,
         }

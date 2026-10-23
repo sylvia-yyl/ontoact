@@ -5,7 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.database import Base
 
 class EntityInstance(Base):
-    """行级实例数据 — Pipeline Mapping 每行数据存为一条 instance"""
+    """One object instance; row_data holds its properties."""
     __tablename__ = "entity_instances"
 
     id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -47,7 +47,7 @@ def _reject_interface_instance(connection, target: EntityInstance) -> None:
             {"entity_id": str(target.entity_id)},
         ).scalar()
     if str(kind or "").lower() == "interface":
-        raise ValueError("INTERFACE_NOT_INSTANTIABLE: Interface 不能创建 EntityInstance")
+        raise ValueError("INTERFACE_NOT_INSTANTIABLE: an interface cannot have instances")
 
 
 @event.listens_for(EntityInstance, "before_insert")

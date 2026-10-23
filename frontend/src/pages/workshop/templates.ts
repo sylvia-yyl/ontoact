@@ -5,13 +5,13 @@ export type Region = { id: string; tag: string; label: string; span: number }
 export type TemplateId = 'free' | 'scene_kpi_insight' | 'split' | 'kpi_top'
 
 export const TEMPLATES: Record<TemplateId, { label: string; description: string; regions: Region[] }> = {
-  free: { label: '自由布局', description: '整页一个 24 列网格，组件随意摆放。', regions: [] },
-  scene_kpi_insight: { label: '场景 + 指标 + 洞察', description: '左上场景区放地图或主图，右上指标区放数字卡片，下方洞察区放图表和列表。', regions: [
-    { id: 'scene', tag: 'SCENE', label: '场景区', span: 15 }, { id: 'kpi', tag: 'KPI', label: '指标区', span: 9 }, { id: 'insight', tag: 'INSIGHT', label: '洞察区', span: 24 }] },
-  split: { label: '左右分屏', description: '左右各占一半，适合对比。', regions: [
-    { id: 'left', tag: 'LEFT', label: '左屏', span: 12 }, { id: 'right', tag: 'RIGHT', label: '右屏', span: 12 }] },
-  kpi_top: { label: '顶部指标 + 主区', description: '上方一排指标，下方主区放图表。', regions: [
-    { id: 'kpi', tag: 'KPI', label: '指标区', span: 24 }, { id: 'main', tag: 'MAIN', label: '主区', span: 24 }] },
+  free: { label: 'Free layout', description: 'One 24-column grid; place widgets anywhere.', regions: [] },
+  scene_kpi_insight: { label: 'Scene + KPIs + insights', description: 'Map or main chart top left, KPI cards top right, charts and lists below.', regions: [
+    { id: 'scene', tag: 'SCENE', label: 'Scene', span: 15 }, { id: 'kpi', tag: 'KPI', label: 'KPIs', span: 9 }, { id: 'insight', tag: 'INSIGHT', label: 'Insights', span: 24 }] },
+  split: { label: 'Split', description: 'Two halves side by side, for comparisons.', regions: [
+    { id: 'left', tag: 'LEFT', label: 'Left', span: 12 }, { id: 'right', tag: 'RIGHT', label: 'Right', span: 12 }] },
+  kpi_top: { label: 'KPIs on top + main', description: 'A row of KPIs above a main area for charts.', regions: [
+    { id: 'kpi', tag: 'KPI', label: 'KPIs', span: 24 }, { id: 'main', tag: 'MAIN', label: 'Main', span: 24 }] },
 }
 
 export const regionsOf = (page: Pick<Page, 'template'>) => TEMPLATES[(page.template ?? 'free') as TemplateId]?.regions ?? []

@@ -1,4 +1,4 @@
-"""slowapi 限流器 - 用于保护 Auth 等敏感端点免受暴力破解。"""
+"""Rate limiter (slowapi) that protects sign-in and other sensitive endpoints from brute force."""
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
