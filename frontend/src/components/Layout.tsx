@@ -7,6 +7,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { NAV_ENTRIES, ontologyIdFromUrl, readStoredOntology, urlForOntologySwitch, writeStoredOntology } from '@/components/navigation'
 
 const LOCAL_SINGLE_USER = import.meta.env.VITE_AUTH_MODE === 'local_single_user'
+const plural = (count: number, noun: string) => `${count} ${noun}${count === 1 ? '' : 's'}`
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const logout = useAuthStore(s => s.logout)
@@ -79,7 +80,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <option value="">Select an ontology…</option>
             {items.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
           </select>
-          {current && <span className="hidden truncate text-xs text-slate-400 lg:inline">{current.entity_count} object types · {current.relation_count} link types</span>}
+          {current && <span className="hidden truncate text-xs text-slate-400 lg:inline">{plural(current.entity_count, 'object type')} · {plural(current.relation_count, 'link type')}</span>}
           {ontologies.error && <span role="alert" className="truncate text-xs text-red-700">Could not load ontologies</span>}
         </header>
         <div className="px-8 py-6 xl:px-10">{children}</div>

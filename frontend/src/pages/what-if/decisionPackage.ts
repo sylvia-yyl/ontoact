@@ -19,9 +19,13 @@ export const humanize = (key: string) => {
 const valueText = (value: unknown) => Array.isArray(value) ? value.join(', ') : typeof value === 'object' && value !== null ? String((value as { object_id?: string }).object_id ?? JSON.stringify(value)) : String(value)
 
 /** The parameters of an action invocation as "Name: value" pairs, without the action type. */
-export function describe(values: Record<string, unknown>) {
+export function describe(values: Record<string, unknown>): string {
+  // decision/v1 actions nest their arguments under "parameters".
+  if (values.parameters && typeof values.parameters === 'object' && !Array.isArray(values.parameters)) return describe(values.parameters as Record<string, unknown>)
   return plain(Object.entries(values).filter(([key, value]) => key !== 'action_type' && value !== null && value !== undefined && !(Array.isArray(value) && !value.length))
-    .map(([key, value]) => `${humanize(key)}: ${valueText(value)}`).join(' · '))
+    .map(([key, value]) => key.endsWith('_at') && typeof value === 'number'
+      ? `${humanize(key.slice(0, -3))} on day ${value}`  // offsets from the planning date
+      : `${humanize(key)}: ${valueText(value)}`).join(' · '))
 }
 
 /** The run's package is server state: it survives refreshes and reflects reviews done by other people. */

@@ -7,8 +7,12 @@
   },
   "license": "Same terms as this repository.",
   "pack_version": 1,
-  "exported": "2026-10-23",
+  "exported": "2026-10-24",
   "files": {
+    "app.json": {
+      "sha256": "219adce837ccdf26de3c905219e4c37657d15e42409b7a267cf9c3419bde5d5c",
+      "bytes": 5005
+    },
     "decision_function.py": {
       "sha256": "5a429f5e863e9017bbca8006d55e5e5e460cd73dcaf642756e24f04072c49882",
       "bytes": 8288

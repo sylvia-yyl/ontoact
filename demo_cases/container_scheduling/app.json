@@ -1,0 +1,212 @@
+{
+  "schema": "workshop-app/v1",
+  "name": "Container Scheduling",
+  "data_sources": [
+    {
+      "id": "plan",
+      "kind": "study_run",
+      "label": "Three-week plan",
+      "study_id": "__STUDY_ID__",
+      "node": "decide"
+    }
+  ],
+  "variables": [
+    {
+      "id": "action",
+      "label": "Action"
+    }
+  ],
+  "pages": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "widgets": [
+        {
+          "id": "kpis",
+          "type": "kpi_strip",
+          "title": "",
+          "source": "plan",
+          "path": "",
+          "props": {
+            "items": [
+              {
+                "label": "Cases short over three weeks",
+                "path": "decision.metric.baseline",
+                "format": "number"
+              },
+              {
+                "label": "Warehouses short",
+                "path": "decision.kpis.0.value",
+                "format": "number"
+              },
+              {
+                "label": "Current demurrage",
+                "path": "decision.kpis.1.value",
+                "format": "money"
+              },
+              {
+                "label": "Containers that can be re-routed",
+                "path": "decision.kpis.2.value",
+                "format": "number"
+              }
+            ]
+          }
+        },
+        {
+          "id": "warehouses",
+          "type": "table",
+          "title": "Warehouses",
+          "source": "plan",
+          "path": "decision.subjects",
+          "props": {
+            "columns": [
+              {
+                "label": "Warehouse",
+                "field": "label"
+              },
+              {
+                "label": "Status",
+                "field": "status",
+                "badge": true
+              },
+              {
+                "label": "Cases short",
+                "field": "metric_value",
+                "format": "number",
+                "tone_rule": "gt",
+                "tone_value": 0
+              },
+              {
+                "label": "Why",
+                "field": "reasons"
+              }
+            ]
+          }
+        },
+        {
+          "id": "suggested",
+          "type": "action_list",
+          "title": "Suggested Actions",
+          "source": "plan",
+          "path": "decision.candidates",
+          "props": {
+            "label_field": "label",
+            "subtitle": "Cases short after: {metric_after|number} · Cost {cost|money}",
+            "variable": "action",
+            "only_applicable": true,
+            "navigate": "actions"
+          }
+        }
+      ],
+      "layout": [
+        {
+          "i": "kpis",
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 3
+        },
+        {
+          "i": "warehouses",
+          "x": 0,
+          "y": 3,
+          "w": 15,
+          "h": 9
+        },
+        {
+          "i": "suggested",
+          "x": 15,
+          "y": 3,
+          "w": 9,
+          "h": 9
+        }
+      ]
+    },
+    {
+      "id": "actions",
+      "title": "Suggested Actions",
+      "widgets": [
+        {
+          "id": "actionList",
+          "type": "action_list",
+          "title": "Suggestions",
+          "source": "plan",
+          "path": "decision.candidates",
+          "props": {
+            "label_field": "label",
+            "subtitle": "Cases short after: {metric_after|number} · Cost {cost|money}",
+            "variable": "action"
+          }
+        },
+        {
+          "id": "detail",
+          "type": "action_detail",
+          "title": "Action",
+          "source": "plan",
+          "path": "decision.candidates",
+          "props": {
+            "variable": "action",
+            "explain": false,
+            "metrics": [
+              {
+                "label": "Cases short over three weeks",
+                "before_path": "decision.metric.baseline",
+                "after_field": "metric_after",
+                "format": "number"
+              },
+              {
+                "label": "Cost",
+                "after_field": "cost",
+                "format": "money"
+              }
+            ]
+          }
+        },
+        {
+          "id": "rerun",
+          "type": "rerun_button",
+          "title": "",
+          "source": "plan",
+          "path": "",
+          "props": {
+            "label": "Re-run plan",
+            "steps": [
+              {
+                "label": "Cases short",
+                "path": "decision.metric.baseline",
+                "format": "number"
+              }
+            ]
+          }
+        }
+      ],
+      "layout": [
+        {
+          "i": "actionList",
+          "x": 0,
+          "y": 0,
+          "w": 8,
+          "h": 19
+        },
+        {
+          "i": "detail",
+          "x": 8,
+          "y": 0,
+          "w": 16,
+          "h": 17
+        },
+        {
+          "i": "rerun",
+          "x": 8,
+          "y": 17,
+          "w": 16,
+          "h": 2
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "time_range": "all",
+    "refresh_minutes": 0
+  }
+}

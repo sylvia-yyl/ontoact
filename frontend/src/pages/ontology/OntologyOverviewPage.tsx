@@ -5,6 +5,7 @@ import cytoscape from 'cytoscape'
 import { ChevronRight } from 'lucide-react'
 import { apiClientV2, formatApiError } from '@/api/client'
 import { ontologyApi } from '@/api/ontologies'
+import { typeLabel } from '@/lib/labels'
 import { plain } from '@/pages/what-if/decisionPackage'
 
 type Property = { api_name: string; data_type: string }
@@ -15,10 +16,9 @@ type ObjectRecord = { object_id: string; object_type: string; properties: Record
 type Step = { type: string; id: string }
 type Neighbor = { link: LinkType; direction: 'out' | 'in'; otherType: string }
 
-/** "CustomerOrder" -> "Customer Order", "BOMLine" -> "BOM Line". */
-const typeLabel = (name: string) => name.replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
 /** "IN_PRODUCT_LINE" -> "in product line"; snake_case properties the same way. */
 const words = (name: string) => name.replace(/_/g, ' ').toLowerCase()
+const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1)
 const objectName = (row: ObjectRecord) => String(row.properties.name ?? row.properties.code ?? plain(row.object_id))
 
 const SAMPLE_SIZE = 25
@@ -162,7 +162,7 @@ function TypeGraph({ types, links, selected, onSelect }: { types: ObjectType[]; 
     node.addClass('is-selected')
     node.connectedEdges().addClass('is-adjacent')
   }, [selected, types, links])
-  return <div ref={ref} className="h-[640px] w-full bg-[var(--surface-canvas)]" role="img" aria-label={`Ontology graph: ${types.length} object types, ${links.length} link types`} data-testid="type-graph" />
+  return <div ref={ref} className="h-[640px] w-full bg-[var(--surface-canvas)]" role="img" aria-label={`Ontology graph of ${types.length} object types`} data-testid="type-graph" />
 }
 
 function neighborsOf(type: string, links: LinkType[]): Neighbor[] {
@@ -173,7 +173,8 @@ function neighborsOf(type: string, links: LinkType[]): Neighbor[] {
 }
 
 function linkPhrase(neighbor: Neighbor) {
-  return neighbor.direction === 'out' ? `${words(neighbor.link.api_name)} → ${typeLabel(neighbor.otherType)}` : `${typeLabel(neighbor.otherType)} ← ${words(neighbor.link.api_name)}`
+  // Reads as a sentence: "Supply Commitment → supplies" (a link into this type), "Part of line → Product Line" (a link out of it).
+  return neighbor.direction === 'in' ? `${typeLabel(neighbor.otherType)} → ${words(neighbor.link.api_name)}` : `${capitalize(words(neighbor.link.api_name))} → ${typeLabel(neighbor.otherType)}`
 }
 
 function TypeDetail({ ontologyId, type, links, onOpen, onType }: { ontologyId: string; type: ObjectType; links: LinkType[]; onOpen: (step: Step) => void; onType: (name: string) => void }) {
@@ -183,7 +184,7 @@ function TypeDetail({ ontologyId, type, links, onOpen, onType }: { ontologyId: s
   return <div data-testid="type-detail">
     <header className="border-b px-4 py-3">
       <h2 className="text-base font-semibold text-slate-900">{typeLabel(type.api_name)}</h2>
-      <p className="text-xs text-slate-500">{type.count.toLocaleString()} objects · {type.properties.length - 1} properties</p>
+      <p className="text-xs text-slate-500">{type.count.toLocaleString()} {type.count === 1 ? 'object' : 'objects'} · {type.properties.length - 1} properties</p>
     </header>
     <div className="space-y-4 p-4">
       <div><h3 className="wb-eyebrow">Links</h3>

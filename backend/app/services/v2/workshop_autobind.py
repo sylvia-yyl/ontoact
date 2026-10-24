@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 
 import httpx
 
@@ -38,14 +39,20 @@ class AutobindError(Exception):
 
 # --- 1. profile --------------------------------------------------------------------------------------------------
 
+def display_name(api_name: str) -> str:
+    """A readable label for an API name: "CustomerOrder" -> "Customer Order", "due_at" -> "Due at"."""
+    spaced = re.sub(r"([a-z0-9])([A-Z])", r"\1 \2", re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1 \2", api_name)).replace("_", " ").strip()
+    return spaced[:1].upper() + spaced[1:]
+
+
 def _labels(db, ontology_id: str) -> dict[str, dict]:
-    """Display names an ontology designer gave each type and property (falling back to the API names)."""
+    """Display names an ontology designer gave each type and property (falling back to readable API names)."""
     out = {}
     for entity in db.query(Entity).filter_by(ontology_id=ontology_id).all():
         api = str(entity.canonical_id or "").split(":", 1)[1] if str(entity.canonical_id or "").startswith("ontology:") else entity.name_en or entity.name_cn
         definitions = (entity.properties or {}).get("property_definitions", []) if isinstance(entity.properties, dict) else []
-        out[api] = {"label": entity.name_cn if entity.name_cn and entity.name_cn != api else api,
-                    "properties": {row["id"]: row.get("name") or row.get("label") or row["id"] for row in definitions if isinstance(row, dict) and row.get("id")}}
+        out[api] = {"label": entity.name_cn if entity.name_cn and entity.name_cn != api else display_name(api),
+                    "properties": {row["id"]: row.get("name") or row.get("label") or display_name(row["id"]) for row in definitions if isinstance(row, dict) and row.get("id")}}
     return out
 
 

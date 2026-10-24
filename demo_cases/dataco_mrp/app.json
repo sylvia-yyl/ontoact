@@ -16,7 +16,7 @@
   },
   {
    "id": "policy",
-   "label": "Scenario"
+   "label": "Planning policy"
   },
   {
    "id": "action",
@@ -54,17 +54,17 @@
         "format": "percent"
        },
        {
-        "label": "Total Demand Events",
+        "label": "Demand events",
         "path": "totals.demand_events",
         "format": "number"
        },
        {
-        "label": "Demand Events At Risk",
+        "label": "Demand events at risk",
         "path": "totals.at_risk",
         "format": "number"
        },
        {
-        "label": "Total Planned Orders",
+        "label": "Planned orders",
         "path": "totals.planned_orders",
         "format": "number"
        }
@@ -74,7 +74,7 @@
     {
      "id": "scenario",
      "type": "facet_list",
-     "title": "Scenario",
+     "title": "Planning policy",
      "source": "plan",
      "path": "portfolio",
      "props": {
@@ -111,7 +111,7 @@
         "field": "name"
        },
        {
-        "label": "Scenario",
+        "label": "Planning policy",
         "field": "policy",
         "badge": true
        },
@@ -257,7 +257,7 @@
     {
      "id": "demandChart",
      "type": "bar_chart",
-     "title": "Demand Event Views",
+     "title": "View",
      "source": "plan",
      "path": "demand_events",
      "props": {
@@ -291,7 +291,7 @@
      "props": {
       "columns": [
        {
-        "label": "Demand Event Id",
+        "label": "Demand event",
         "field": "id"
        },
        {
@@ -378,7 +378,7 @@
     {
      "id": "rootItem",
      "type": "select",
-     "title": "Root Item",
+     "title": "Product line",
      "source": "plan",
      "path": "portfolio",
      "props": {

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { apiClientV2, formatApiError } from '@/api/client'
+import { typeLabel } from '@/lib/labels'
 import { pickWidgets, type AutobindResult } from './editorModel'
 import { specOf, type DataSource, type Page } from './spec'
 
@@ -26,7 +27,7 @@ export default function AutobindDialog({ ontologyId, prefix, applyLabel, onApply
       <p className="mt-1 text-xs text-slate-500">OntoAct profiles the type's fields, picks a role for each and configures data sources and widgets. Preview first, keep what you want, then generate.</p>
       <div className="mt-3 flex flex-wrap items-end gap-3">
         <label className="text-xs text-slate-500">Object type<select className="wb-input mt-0.5 block w-56" aria-label="Object type" value={objectType} onChange={event => setObjectType(event.target.value)}>
-          <option value="">Select…</option>{catalog.data?.types.map(row => <option key={row.api_name} value={row.api_name}>{row.api_name}</option>)}</select></label>
+          <option value="">Select…</option>{catalog.data?.types.map(row => <option key={row.api_name} value={row.api_name}>{typeLabel(row.api_name)}</option>)}</select></label>
         <fieldset className="flex gap-3 text-xs" aria-label="Method">{MODES.map(([value, label]) => <label key={value} className="flex items-center gap-1">
           <input type="radio" name="autobind-mode" checked={mode === value} onChange={() => setMode(value)} />{label}</label>)}</fieldset>
         <button className="wb-button-primary" disabled={!objectType || generate.isPending} onClick={() => generate.mutate()}>{generate.isPending ? 'Generating…' : 'Preview'}</button>
@@ -35,7 +36,7 @@ export default function AutobindDialog({ ontologyId, prefix, applyLabel, onApply
       {result && <div className="mt-4 grid gap-4 md:grid-cols-2">
         <section><h3 className="text-xs font-semibold text-slate-600">Fields ({result.profile.label} · {result.profile.count.toLocaleString()} objects)</h3>
           <table className="mt-1 w-full text-xs" data-testid="autobind-fields"><tbody>{result.profile.fields.map(field => <tr key={field.name} className="border-b">
-            <td className="py-1 pr-2">{field.label}{field.label !== field.name && <span className="text-slate-400"> {field.name}</span>}</td>
+            <td className="py-1 pr-2">{field.label}</td>
             <td className="pr-2">{ROLE[field.role] ?? field.role}{field.dimension ? ` → ${field.dimension}` : ''}</td><td className="text-slate-400">{field.distinct} values</td></tr>)}</tbody></table></section>
         <section><h3 className="text-xs font-semibold text-slate-600">Will generate: {result.plan.page_title}{result.model && <span className="font-normal text-slate-400"> · {result.model}</span>}</h3>
           <ul className="mt-1 space-y-1 text-sm" data-testid="autobind-widgets">{result.page.widgets.map(widget => <li key={widget.id}><label className="flex items-center gap-2">

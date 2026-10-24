@@ -169,7 +169,7 @@ def main():
             for source in definition.get("data_sources", []):
                 if "study_id" in source:
                     source["study_id"] = study["id"]
-            app = ok(client.post(f"{api}/workshop-apps", json={"name": definition.get("name", meta["name"]),
+            app = ok(client.post(f"{api}/workshop-apps", json={"name": definition.pop("name", meta["name"]),
                                                                 "description": meta["description"], "definition": definition}))
             app_id = app["id"]
         print(json.dumps({"case": args.case, "ontology": oid, "objects": objects, "links": links, "study": study["id"],

@@ -1,4 +1,4 @@
-import { LayoutDashboard, Network, SearchCode } from 'lucide-react'
+import { LayoutDashboard, Network } from 'lucide-react'
 
 export interface NavEntry {
   key: string
@@ -11,13 +11,12 @@ export interface NavEntry {
   activeOn: RegExp
 }
 
+// The query library (/apps/queries) is not listed yet: queries are authored in the app editor, which this repository leaves out.
 export const NAV_ENTRIES: NavEntry[] = [
   { key: 'ontology', label: 'Ontology', icon: Network, hint: 'Object types, links and objects',
     path: id => (id ? `/ontology?ontology=${id}` : '/ontology'), activeOn: /^\/ontology/ },
   { key: 'apps', label: 'Apps', icon: LayoutDashboard, hint: 'Dashboards and decision workspaces',
     path: id => (id ? `/apps/workshop?ontology=${id}` : '/apps/workshop'), activeOn: /^\/apps\/workshop/ },
-  { key: 'queries', label: 'Queries', icon: SearchCode, hint: 'Reusable, versioned ontology queries',
-    path: id => (id ? `/apps/queries?ontology=${id}` : '/apps/queries'), activeOn: /^\/apps\/queries/ },
 ]
 
 /** The ontology a URL is about: ?ontology= or ?ontology_id=. */

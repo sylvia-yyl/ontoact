@@ -8,11 +8,11 @@
   },
   "license": "Demand rows: CC BY 4.0 (DataCo Smart Supply Chain). Rule-generated supply: same terms as this repository.",
   "pack_version": 1,
-  "exported": "2026-10-23",
+  "exported": "2026-10-24",
   "files": {
     "app.json": {
-      "sha256": "1f6619608b22ddb92d4ce8d4afe62f0d80786bf301a6a369bf57e560a387b4ff",
-      "bytes": 10514
+      "sha256": "571a51917eb94adff7ee6b75c6eae6b4a4b6d7447d8b88c001bfbfb84264e328",
+      "bytes": 10509
     },
     "links.jsonl": {
       "sha256": "d66691576e26ad1e3e0e054c30ee24daed49726ea852c978eb99b69f4cfd1291",

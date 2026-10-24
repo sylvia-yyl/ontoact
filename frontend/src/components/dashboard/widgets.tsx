@@ -32,7 +32,7 @@ export function DataTable<T extends Record<string, unknown>>({ rows, columns, ro
     <thead className="sticky top-0 bg-slate-50 text-xs text-slate-500"><tr>{columns.map(col => <th key={col.label} className="border-b px-3 py-2 font-medium">{col.label}</th>)}</tr></thead>
     <tbody>{rows.map(row => <tr key={rowKey(row)} onClick={() => onSelect?.(row)} className={`border-b ${onSelect ? 'cursor-pointer hover:bg-slate-50' : ''} ${selected === rowKey(row) ? 'bg-blue-50 outline outline-1 outline-blue-400' : ''}`}>
       {columns.map(col => { const value = col.value(row); const tone = col.tone?.(row)
-        return <td key={col.label} className={`px-3 py-2.5 ${tone === 'bad' ? 'font-semibold text-blue-700' : ''}`}>{col.badge ? <span className="rounded border border-blue-300 bg-blue-50 px-2 py-0.5 text-xs text-blue-800">{formatCell(value, col.format)}</span> : formatCell(value, col.format)}</td> })}
+        return <td key={col.label} className={`px-3 py-2.5 ${tone === 'bad' ? 'font-semibold text-blue-700' : ''}`}>{col.badge ? <span className="rounded border border-blue-300 bg-blue-50 px-2 py-0.5 text-xs text-blue-800 first-letter:uppercase">{formatCell(value, col.format)}</span> : formatCell(value, col.format)}</td> })}
     </tr>)}</tbody>
   </table></div>
 }
@@ -60,7 +60,7 @@ export function CoverageGrid({ columns, rows, label }: { columns: string[]; rows
   return <div className="overflow-auto" data-testid="coverage-grid"><table className="border-collapse text-xs" aria-label={label}>
     <thead className="sticky top-0 bg-slate-50 text-slate-500"><tr><th className="sticky left-0 z-10 min-w-48 border-b bg-slate-50 px-3 py-2 text-left font-medium">Item</th>{columns.map(col => <th key={col} className="min-w-20 border-b px-2 py-2 text-right font-medium">{col}</th>)}</tr></thead>
     <tbody>{rows.map(row => <tr key={row.key} className="border-b">
-      <td className={`sticky left-0 bg-white px-3 py-1.5 ${row.emphasis ? 'font-semibold' : ''}`}>{row.label}</td>
+      <td className={`sticky left-0 bg-white px-3 py-1.5 ${row.emphasis ? 'font-semibold' : ''}`}>{row.label}{row.emphasis && <span className="ml-2 rounded bg-blue-600 px-1.5 py-0.5 text-[10px] font-medium text-white">Critical</span>}</td>
       {row.values.map((value, index) => <td key={index} className={`px-2 py-1.5 text-right tabular-nums ${tone(value)}`}>{Math.round(value)}</td>)}
     </tr>)}</tbody>
   </table></div>
