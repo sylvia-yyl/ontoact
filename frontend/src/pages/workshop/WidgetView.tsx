@@ -138,7 +138,7 @@ function TableWidget({ widget, rt, rows, p }: { widget: Widget; rt: Runtime; row
 function BarWidget({ rows, p, title }: { rows: Row[]; p: P; title: string }) {
   const series = list<P>(p.series)
   const grouped = useMemo(() => groupSeries(rows, str(p.x_field), series as never), [rows, p.x_field, series])
-  const chart = useMemo(() => series.map((row, index) => ({ name: str(row.label), color: str(row.color) || ['#1d4ed8', '#b91c1c', '#0f766e', '#a16207'][index % 4], data: grouped.values[index] })), [series, grouped])
+  const chart = useMemo(() => series.map((row, index) => ({ name: str(row.label), color: str(row.color) || ['#1d4ed8', '#93c5fd', '#1e3a8a', '#60a5fa'][index % 4], data: grouped.values[index] })), [series, grouped])
   return <StackedBarChart label={title || 'Bar chart'} categories={grouped.keys} series={chart} height={240} />
 }
 
@@ -186,19 +186,19 @@ function ActionDetail({ rows, p, rt, source }: { rows: Row[]; p: P; rt: Runtime;
   const actions = list<P>(candidate.actions)
   return <div className="h-full space-y-3 overflow-auto pr-1" data-testid="action-detail">
     <div><p className="text-xs text-slate-500">{humanize(str(candidate.kind))}</p><h3 className="text-base font-semibold">{plainId(str(candidate.label))}</h3>
-      {candidate.applicable === false && <p className="text-xs text-amber-700">{list<P>(candidate.hard_constraints).map(row => str(row.code)).join(', ')}</p>}</div>
+      {candidate.applicable === false && <p className="text-xs text-blue-800">{list<P>(candidate.hard_constraints).map(row => str(row.code)).join(', ')}</p>}</div>
     <dl className="grid grid-cols-2 gap-2 lg:grid-cols-4">{list<P>(p.metrics).map(metric => <div key={str(metric.label)} className="rounded border bg-slate-50 p-2"><dt className="text-[11px] text-slate-500">{str(metric.label)}</dt>
       <dd className="text-sm font-semibold">{metric.before_path ? `${formatCell(getPath(source.outputs, str(metric.before_path)), metric.format as Format)} → ` : ''}{formatCell(getPath(candidate, str(metric.after_field)), metric.format as Format)}</dd></div>)}</dl>
-    {Array.isArray(candidate.protected_orders) && <p className="text-sm">Orders protected {list(candidate.protected_orders).length} · harmed <span className={list(candidate.harmed_orders).length ? 'text-rose-700' : ''}>{list(candidate.harmed_orders).length}</span></p>}
+    {Array.isArray(candidate.protected_orders) && <p className="text-sm">Orders protected {list(candidate.protected_orders).length} · harmed <span className={list(candidate.harmed_orders).length ? 'font-semibold text-blue-700' : ''}>{list(candidate.harmed_orders).length}</span></p>}
     <ul className="max-h-32 space-y-1 overflow-auto text-xs">{actions.map((row, index) => <li key={index} className="rounded border px-2 py-1"><strong>{humanize(str(row.action_type))}</strong> · {describe(row)}</li>)}</ul>
     {!!p.explain && <div className="rounded border border-blue-200 bg-blue-50/50 p-3" data-testid="explanation">
       <div className="flex items-center gap-2"><span className="rounded bg-blue-600 px-2 py-0.5 text-xs text-white">Explanation</span>
-        {explanation && <span className={`rounded px-2 py-0.5 text-xs ${explanation.verified ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>{explanation.verified ? 'Verified against evidence' : `Unverified (${explanation.issues.length} issues)`}</span>}
+        {explanation && <span className={`rounded px-2 py-0.5 text-xs ${explanation.verified ? 'bg-blue-600 text-white' : 'border border-blue-300 bg-white text-blue-800'}`}>{explanation.verified ? 'Verified against evidence' : `Unverified (${explanation.issues.length} issues)`}</span>}
         {explanation && <span className="text-xs text-slate-500">{explanation.model}</span>}
         <button className="wb-button-secondary ml-auto" disabled={!context || explain.isPending || rt.editing} onClick={() => explain.mutate()}>{explain.isPending ? 'Explaining…' : explanation ? 'Regenerate' : 'Explain'}</button></div>
       {explain.error && <p role="alert" className="mt-2 text-xs text-rose-700">{formatApiError(explain.error)}</p>}
       {explanation && <div className="mt-2 space-y-1 text-sm"><p>{explanation.answer.summary}</p><ol className="list-decimal pl-5">{explanation.answer.reasoning.map((row, index) => <li key={index}>{row.claim} <span className="text-xs text-blue-700">[{row.evidence_ids.join(', ')}]</span></li>)}</ol>
-        {explanation.answer.risks.length > 0 && <ul className="list-disc pl-5 text-amber-800">{explanation.answer.risks.map((row, index) => <li key={index}>{row.claim} <span className="text-xs text-blue-700">[{row.evidence_ids.join(', ')}]</span></li>)}</ul>}
+        {explanation.answer.risks.length > 0 && <ul className="list-disc pl-5 text-blue-900">{explanation.answer.risks.map((row, index) => <li key={index}>{row.claim} <span className="text-xs text-blue-700">[{row.evidence_ids.join(', ')}]</span></li>)}</ul>}
         <details className="text-xs"><summary className="cursor-pointer text-slate-500">Evidence ({explanation.evidence.length})</summary><ul>{explanation.evidence.map(row => <li key={row.id}><strong>{row.id}</strong> {row.label}: {typeof row.value === 'object' ? JSON.stringify(row.value) : str(row.value)}</li>)}</ul></details></div>}
     </div>}
     {!rt.editing && <div className="border-t pt-2"><DecisionPackagePanel context={context} candidate={{ id: str(candidate.id), applicable: candidate.applicable !== false }} /></div>}
@@ -246,10 +246,10 @@ function RerunButton({ p, rt, source }: { p: P; rt: Runtime; source: ResolvedStu
     {open && <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40" role="dialog" aria-label="Orchestrating Actions" data-testid="orchestration">
       <div className="w-[760px] max-w-[95vw] rounded bg-white p-5 shadow-xl">
         <h2 className="text-base font-semibold">⟳ Orchestrating Actions</h2><p className="text-xs text-slate-500">Each step is a live platform call.</p>
-        <ol className="mt-4 grid gap-2" style={{ gridTemplateColumns: `repeat(${Math.max(steps.length, 1)}, minmax(0, 1fr))` }}>{steps.map(row => <li key={row.label} className="text-center text-xs"><span className={`mx-auto mb-1 flex h-6 w-6 items-center justify-center rounded-full ${row.state === 'done' ? 'bg-emerald-600 text-white' : row.state === 'running' ? 'bg-blue-600 text-white' : row.state === 'failed' ? 'bg-rose-600 text-white' : 'bg-slate-200'}`}>{row.state === 'done' ? '✓' : row.state === 'failed' ? '!' : '·'}</span><strong className="block">{row.label}</strong><span className="text-slate-500">{row.detail}</span></li>)}</ol>
+        <ol className="mt-4 grid gap-2" style={{ gridTemplateColumns: `repeat(${Math.max(steps.length, 1)}, minmax(0, 1fr))` }}>{steps.map(row => <li key={row.label} className="text-center text-xs"><span className={`mx-auto mb-1 flex h-6 w-6 items-center justify-center rounded-full ${row.state === 'done' ? 'bg-blue-600 text-white' : row.state === 'running' ? 'bg-blue-300 text-white' : row.state === 'failed' ? 'bg-red-600 text-white' : 'bg-slate-200'}`}>{row.state === 'done' ? '✓' : row.state === 'failed' ? '!' : '·'}</span><strong className="block">{row.label}</strong><span className="text-slate-500">{row.detail}</span></li>)}</ol>
         {error && <p role="alert" className="mt-3 text-xs text-rose-700">{error}</p>}
         <div className="mt-4 flex justify-end gap-2">{!run.isPending && !run.isSuccess && <button className="wb-button-primary" onClick={() => run.mutate()}>Start</button>}
-          {run.isSuccess && <><span className="mr-auto self-center text-sm text-emerald-700">✓ Complete</span><button className="wb-button-primary" onClick={() => { setOpen(false); rt.refresh() }}>View updated data</button></>}
+          {run.isSuccess && <><span className="mr-auto self-center text-sm text-blue-700">✓ Complete</span><button className="wb-button-primary" onClick={() => { setOpen(false); rt.refresh() }}>View updated data</button></>}
           <button className="wb-button-secondary" onClick={() => setOpen(false)}>Close</button></div>
       </div></div>}
   </>

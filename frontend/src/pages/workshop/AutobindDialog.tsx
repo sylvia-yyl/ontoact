@@ -43,7 +43,7 @@ export default function AutobindDialog({ ontologyId, prefix, applyLabel, onApply
             <span className="rounded bg-slate-100 px-1.5 text-[11px] text-slate-600">{specOf(widget.type)?.label}</span>
             <span>{widget.title || (widget.type === 'kpi_strip' ? (widget.props.items as Array<{ label: string }>).map(row => row.label).join(' · ') : widget.id)}</span></label></li>)}</ul>
           {result.plan.reasoning && <p className="mt-2 rounded bg-blue-50 p-2 text-xs text-blue-900">Model notes: {result.plan.reasoning}</p>}
-          {result.dropped.length > 0 && <div className="mt-2 rounded bg-amber-50 p-2 text-xs text-amber-900" data-testid="autobind-dropped"><p>These model choices did not fit the data and were dropped:</p><ul className="list-disc pl-4">{result.dropped.map(row => <li key={row}>{row}</li>)}</ul></div>}
+          {result.dropped.length > 0 && <div className="mt-2 rounded bg-blue-50 p-2 text-xs text-blue-900" data-testid="autobind-dropped"><p>These model choices did not fit the data and were dropped:</p><ul className="list-disc pl-4">{result.dropped.map(row => <li key={row}>{row}</li>)}</ul></div>}
         </section>
       </div>}
       <div className="mt-4 flex justify-end gap-2">

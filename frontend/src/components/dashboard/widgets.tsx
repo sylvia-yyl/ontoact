@@ -20,9 +20,9 @@ function useChart(build: (chart: echarts.ECharts) => void, deps: unknown[], read
 
 export function KpiStrip({ items }: { items: Kpi[] }) {
   return <div className="grid border-b border-slate-200 bg-white" style={{ gridTemplateColumns: `minmax(300px, 1.6fr) repeat(${items.length - 1}, minmax(0, 1fr))` }} data-testid="kpi-strip">
-    {items.map(item => <div key={item.label} className={`flex min-w-0 flex-wrap items-center gap-x-3 overflow-hidden px-5 py-4 ${item.tone === 'bad' ? 'bg-rose-700 text-white' : item.tone === 'good' ? 'bg-emerald-700 text-white' : ''}`}>
+    {items.map(item => <div key={item.label} className={`flex min-w-0 flex-wrap items-center gap-x-3 overflow-hidden px-5 py-4 ${item.tone ? 'bg-blue-600 text-white' : ''}`}>
       <strong className="whitespace-nowrap text-3xl font-semibold tabular-nums">{item.value}</strong>
-      <span className={`text-xs leading-tight ${item.tone ? 'text-white/85' : 'text-slate-500'}`}>{item.label}{item.note && <><br /><span className={item.tone ? '' : item.noteTone === 'good' ? 'text-emerald-700' : 'text-rose-700'}>{item.note}</span></>}</span>
+      <span className={`text-xs leading-tight ${item.tone ? 'text-white/85' : 'text-slate-500'}`}>{item.label}{item.note && <><br /><span className={item.tone ? '' : item.noteTone === 'good' ? 'text-slate-500' : 'font-medium text-blue-700'}>{item.note}</span></>}</span>
     </div>)}
   </div>
 }
@@ -32,7 +32,7 @@ export function DataTable<T extends Record<string, unknown>>({ rows, columns, ro
     <thead className="sticky top-0 bg-slate-50 text-xs text-slate-500"><tr>{columns.map(col => <th key={col.label} className="border-b px-3 py-2 font-medium">{col.label}</th>)}</tr></thead>
     <tbody>{rows.map(row => <tr key={rowKey(row)} onClick={() => onSelect?.(row)} className={`border-b ${onSelect ? 'cursor-pointer hover:bg-slate-50' : ''} ${selected === rowKey(row) ? 'bg-blue-50 outline outline-1 outline-blue-400' : ''}`}>
       {columns.map(col => { const value = col.value(row); const tone = col.tone?.(row)
-        return <td key={col.label} className={`px-3 py-2.5 ${tone === 'bad' ? 'font-semibold text-rose-700' : tone === 'good' ? 'text-emerald-700' : ''}`}>{col.badge ? <span className="rounded border border-blue-300 bg-blue-50 px-2 py-0.5 text-xs text-blue-800">{formatCell(value, col.format)}</span> : formatCell(value, col.format)}</td> })}
+        return <td key={col.label} className={`px-3 py-2.5 ${tone === 'bad' ? 'font-semibold text-blue-700' : ''}`}>{col.badge ? <span className="rounded border border-blue-300 bg-blue-50 px-2 py-0.5 text-xs text-blue-800">{formatCell(value, col.format)}</span> : formatCell(value, col.format)}</td> })}
     </tr>)}</tbody>
   </table></div>
 }
@@ -56,7 +56,7 @@ export function StackedBarChart({ categories, series, height = 260, label }: { c
 
 /** Rows x time buckets heat grid; negative cells are deficits. */
 export function CoverageGrid({ columns, rows, label }: { columns: string[]; rows: Array<{ key: string; label: string; values: number[]; emphasis?: boolean }>; label: string }) {
-  const tone = (value: number) => value < 0 ? 'bg-rose-100 text-rose-800' : value === 0 ? 'bg-amber-50 text-amber-800' : 'bg-emerald-50 text-emerald-800'
+  const tone = (value: number) => value < 0 ? 'bg-blue-600 font-semibold text-white' : value === 0 ? 'bg-blue-100 text-blue-900' : 'bg-white text-slate-600'
   return <div className="overflow-auto" data-testid="coverage-grid"><table className="border-collapse text-xs" aria-label={label}>
     <thead className="sticky top-0 bg-slate-50 text-slate-500"><tr><th className="sticky left-0 z-10 min-w-48 border-b bg-slate-50 px-3 py-2 text-left font-medium">Item</th>{columns.map(col => <th key={col} className="min-w-20 border-b px-2 py-2 text-right font-medium">{col}</th>)}</tr></thead>
     <tbody>{rows.map(row => <tr key={row.key} className="border-b">
@@ -99,7 +99,7 @@ export function RankBars({ rows, label, format = 'number', color, onSelect, sele
 
 /** id identifies the row; key is the value a click selects (several alerts can share one subject). */
 export type AlertItem = { id: string; key: string; title: string; subtitle?: string; severity: string; time?: string }
-const SEVERITY_BADGE = { bad: 'border-rose-300 bg-rose-50 text-rose-700', warn: 'border-amber-300 bg-amber-50 text-amber-800', good: 'border-emerald-300 bg-emerald-50 text-emerald-800' }
+const SEVERITY_BADGE = { bad: 'border-blue-600 bg-blue-600 text-white', warn: 'border-blue-300 bg-blue-50 text-blue-800', good: 'border-slate-200 bg-slate-50 text-slate-600' }
 
 /** Alerts most severe first, each with a severity badge; clicking one selects it. */
 export function AlertList({ items, label, onSelect, selected }: { items: AlertItem[]; label: string; onSelect?: (key: string) => void; selected?: string | null }) {

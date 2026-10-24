@@ -97,9 +97,9 @@ export function coordinate(value: unknown, limit: number): number | null {
 const SEVERITY: Record<string, 'bad' | 'warn' | 'good'> = { critical: 'bad', high: 'bad', medium: 'warn', low: 'good' }
 export const severityTone = (value: unknown) => SEVERITY[String(value).toLowerCase()]
 
-export const PALETTE = ['#1d4ed8', '#0f766e', '#a16207', '#7c3aed', '#b91c1c', '#0369a1', '#4d7c0f', '#be185d']
-const TONE_COLOR = { bad: '#dc2626', warn: '#f59e0b', good: '#16a34a' }
-/** Severity-like categories get traffic-light colours; anything else cycles the palette. */
+export const PALETTE = ['#1d4ed8', '#60a5fa', '#1e3a8a', '#93c5fd', '#2563eb', '#bfdbfe', '#3b82f6', '#172554']
+const TONE_COLOR = { bad: '#1d4ed8', warn: '#93c5fd', good: '#cbd5e1' }
+/** Severity-like categories get dark-to-light blue by severity; anything else cycles the palette. */
 export function categoryColor(key: string, index: number) {
   const tone = severityTone(key)
   return tone ? TONE_COLOR[tone] : PALETTE[index % PALETTE.length]

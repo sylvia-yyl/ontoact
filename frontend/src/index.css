@@ -17,8 +17,8 @@
   --subtle: #64748b;
   --border: #e2e8f0;
   --border-strong: #cbd5e1;
-  --success: #15803d;
-  --warning: #b45309;
+  --success: #1d4ed8;
+  --warning: #1e40af;
   --danger: #b91c1c;
   font-family: Inter, "SF Pro Display", system-ui, sans-serif;
   font-synthesis: none;
@@ -61,8 +61,8 @@ button, input, select, textarea { accent-color: var(--brand); }
   .wb-section-title { @apply text-lg font-semibold tracking-[-0.01em] text-gray-900; }
   .wb-label { @apply block text-xs font-medium text-gray-600; }
   .wb-status { @apply inline-flex items-center rounded-full border px-2 py-1 text-[11px] font-medium; border-color: var(--border); color: var(--muted); background: #f8fafc; }
-  .wb-status-success { @apply border-emerald-200 bg-emerald-50 text-emerald-700; }
-  .wb-status-warning { @apply border-amber-200 bg-amber-50 text-amber-700; }
+  .wb-status-success { @apply border-blue-600 bg-blue-600 text-white; }
+  .wb-status-warning { @apply border-blue-300 bg-blue-50 text-blue-800; }
   .wb-status-danger { @apply border-red-200 bg-red-50 text-red-700; }
   .wb-alert { @apply flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm; }
   .wb-alert-danger { @apply border-red-200 bg-red-50 text-red-700; }
