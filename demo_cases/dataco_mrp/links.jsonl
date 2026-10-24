@@ -133,141 +133,141 @@
 {"source": "DE-RIP-EUR-1710", "target": "RIP Assembly", "type": "ORDERS"}
 {"source": "DE-SAFE-EUR-1710", "target": "SAFE Assembly", "type": "ORDERS"}
 {"source": "DE-VEST-EUR-1710", "target": "VEST Assembly", "type": "ORDERS"}
-{"source": "DE-RIP-USC-1610", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-USC-1610", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-USC-1610", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-AFR-1610", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-EUR-1610", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-PAC-1610", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-AFR-1610", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-EUR-1610", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-PAC-1610", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-USC-1610", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-AFR-1610", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-EUR-1610", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-PAC-1610", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-AFR-1610", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-EUR-1610", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-PAC-1610", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-USC-1610", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-AFR-1610", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-EUR-1610", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-PAC-1610", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-USC-1611", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-USC-1611", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-USC-1611", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-USC-1611", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-USC-1611", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-AFR-1611", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-EUR-1611", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-PAC-1611", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-AFR-1611", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-EUR-1611", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-PAC-1611", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-AFR-1611", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-EUR-1611", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-PAC-1611", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-AFR-1611", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-EUR-1611", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-PAC-1611", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-AFR-1611", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-EUR-1611", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-PAC-1611", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-USC-1612", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-USC-1612", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-USC-1612", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-AFR-1612", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-EUR-1612", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-PAC-1612", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-AFR-1612", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-EUR-1612", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-PAC-1612", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-AFR-1612", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-EUR-1612", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-PAC-1612", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-USC-1612", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-AFR-1612", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-EUR-1612", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-PAC-1612", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-AFR-1612", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-EUR-1612", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-PAC-1612", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-USC-1612", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-USC-1701", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-USC-1701", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-USC-1701", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-USC-1701", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-USC-1701", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-AFR-1701", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-PAC-1701", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-AFR-1701", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-EUR-1701", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-PAC-1701", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-EUR-1701", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-AFR-1701", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-EUR-1701", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-PAC-1701", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-AFR-1701", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-EUR-1701", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-PAC-1701", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-AFR-1701", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-EUR-1701", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-PAC-1701", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-LAT-1701", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-LAT-1701", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-LAT-1701", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-LAT-1701", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-LAT-1701", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-LAT-1702", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-LAT-1702", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-LAT-1702", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-LAT-1702", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-LAT-1702", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-LAT-1703", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-LAT-1703", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-LAT-1703", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-LAT-1703", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-LAT-1703", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-LAT-1704", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-LAT-1704", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-LAT-1704", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-LAT-1704", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-LAT-1704", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-LAT-1705", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-LAT-1705", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-LAT-1705", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-LAT-1705", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-LAT-1705", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-LAT-1706", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-LAT-1706", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-LAT-1706", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-LAT-1706", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-LAT-1706", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-EUR-1706", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-EUR-1706", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-EUR-1706", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-EUR-1706", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-EUR-1706", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-EUR-1707", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-EUR-1707", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-EUR-1707", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-EUR-1707", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-EUR-1707", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-EUR-1708", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-EUR-1708", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-EUR-1708", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-EUR-1708", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-EUR-1708", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-EUR-1709", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-EUR-1709", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-EUR-1709", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-EUR-1709", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-EUR-1709", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-BIKE-EUR-1710", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-KAYAK-EUR-1710", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-RIP-EUR-1710", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-SAFE-EUR-1710", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "DE-VEST-EUR-1710", "target": "VEST", "type": "IN_PRODUCT_LINE"}
+{"source": "DE-RIP-USC-1610", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-USC-1610", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-USC-1610", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-AFR-1610", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-EUR-1610", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-PAC-1610", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-AFR-1610", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-EUR-1610", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-PAC-1610", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-USC-1610", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-AFR-1610", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-EUR-1610", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-PAC-1610", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-AFR-1610", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-EUR-1610", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-PAC-1610", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-USC-1610", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-AFR-1610", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-EUR-1610", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-PAC-1610", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-USC-1611", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-USC-1611", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-USC-1611", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-USC-1611", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-USC-1611", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-AFR-1611", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-EUR-1611", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-PAC-1611", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-AFR-1611", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-EUR-1611", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-PAC-1611", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-AFR-1611", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-EUR-1611", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-PAC-1611", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-AFR-1611", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-EUR-1611", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-PAC-1611", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-AFR-1611", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-EUR-1611", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-PAC-1611", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-USC-1612", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-USC-1612", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-USC-1612", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-AFR-1612", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-EUR-1612", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-PAC-1612", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-AFR-1612", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-EUR-1612", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-PAC-1612", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-AFR-1612", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-EUR-1612", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-PAC-1612", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-USC-1612", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-AFR-1612", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-EUR-1612", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-PAC-1612", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-AFR-1612", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-EUR-1612", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-PAC-1612", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-USC-1612", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-USC-1701", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-USC-1701", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-USC-1701", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-USC-1701", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-USC-1701", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-AFR-1701", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-PAC-1701", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-AFR-1701", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-EUR-1701", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-PAC-1701", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-EUR-1701", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-AFR-1701", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-EUR-1701", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-PAC-1701", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-AFR-1701", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-EUR-1701", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-PAC-1701", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-AFR-1701", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-EUR-1701", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-PAC-1701", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-LAT-1701", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-LAT-1701", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-LAT-1701", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-LAT-1701", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-LAT-1701", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-LAT-1702", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-LAT-1702", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-LAT-1702", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-LAT-1702", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-LAT-1702", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-LAT-1703", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-LAT-1703", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-LAT-1703", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-LAT-1703", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-LAT-1703", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-LAT-1704", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-LAT-1704", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-LAT-1704", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-LAT-1704", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-LAT-1704", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-LAT-1705", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-LAT-1705", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-LAT-1705", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-LAT-1705", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-LAT-1705", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-LAT-1706", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-LAT-1706", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-LAT-1706", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-LAT-1706", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-LAT-1706", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-EUR-1706", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-EUR-1706", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-EUR-1706", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-EUR-1706", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-EUR-1706", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-EUR-1707", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-EUR-1707", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-EUR-1707", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-EUR-1707", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-EUR-1707", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-EUR-1708", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-EUR-1708", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-EUR-1708", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-EUR-1708", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-EUR-1708", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-EUR-1709", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-EUR-1709", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-EUR-1709", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-EUR-1709", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-EUR-1709", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-BIKE-EUR-1710", "target": "BIKE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-KAYAK-EUR-1710", "target": "KAYAK", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-RIP-EUR-1710", "target": "RIP", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-SAFE-EUR-1710", "target": "SAFE", "type": "FOR_PRODUCT_LINE"}
+{"source": "DE-VEST-EUR-1710", "target": "VEST", "type": "FOR_PRODUCT_LINE"}
 {"source": "BOM-BIKE Assembly-BIKE:Frame Module", "target": "BIKE Assembly", "type": "PARENT_ITEM"}
 {"source": "BOM-BIKE:Frame Module-BIKE:Aluminum Frame", "target": "BIKE:Frame Module", "type": "PARENT_ITEM"}
 {"source": "BOM-BIKE:Frame Module-BIKE:Suspension Fork", "target": "BIKE:Frame Module", "type": "PARENT_ITEM"}
@@ -1064,73 +1064,73 @@
 {"source": "PO-00569", "target": "VEST:Zipper", "type": "SUPPLIES"}
 {"source": "PO-00570", "target": "VEST:Zipper", "type": "SUPPLIES"}
 {"source": "RW-BIKE:Rear Derailleur", "target": "BIKE:Rear Derailleur", "type": "CAN_SUPPLY"}
-{"source": "BIKE Assembly", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Frame Module", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Aluminum Frame", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Suspension Fork", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Headset", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Drivetrain Module", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Crankset", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Chain", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Rear Derailleur", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Shifter", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Pedal", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Wheel Module", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Wheelset", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Tire", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Inner Tube", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Cockpit Module", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Handlebar", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Grip", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Saddle", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Brake Set", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Pack Module", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
-{"source": "SAFE Assembly", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "SAFE:Body Module", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "SAFE:Steel Body Panel", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "SAFE:Door Panel", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "SAFE:Fireboard Lining", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "SAFE:Hinge Set", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "SAFE:Lock Module", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "SAFE:Combination Lock", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "SAFE:Locking Bolt", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "SAFE:Handle", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "SAFE:Interior Module", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "SAFE:Gun Rack", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "SAFE:Interior Carpet", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "SAFE:Pack Module", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "SAFE:Shipping Crate", "target": "SAFE", "type": "IN_PRODUCT_LINE"}
-{"source": "KAYAK Assembly", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "KAYAK:Hull Module", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "KAYAK:HDPE Hull", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "KAYAK:Drain Plug", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "KAYAK:Deck Bungee", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "KAYAK:Outfit Module", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "KAYAK:Seat", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "KAYAK:Footrest", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "KAYAK:Carry Handle", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "KAYAK:Paddle", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "KAYAK:Pack Module", "target": "KAYAK", "type": "IN_PRODUCT_LINE"}
-{"source": "RIP Assembly", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "RIP:Frame Module", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "RIP:Steel Rail", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "RIP:Bushing", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "RIP:Wheel", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "RIP:Grip Module", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "RIP:Handle Grip", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "RIP:Pack Module", "target": "RIP", "type": "IN_PRODUCT_LINE"}
-{"source": "VEST Assembly", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "VEST:Shell Module", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "VEST:Neoprene Shell", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "VEST:Foam Panel", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "VEST:Zipper", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "VEST:Strap Module", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "VEST:Buckle", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "VEST:Webbing", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "VEST:Safety Label", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "VEST:Pack Module", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "VEST:Poly Bag", "target": "VEST", "type": "IN_PRODUCT_LINE"}
-{"source": "BIKE:Returned Derailleur", "target": "BIKE", "type": "IN_PRODUCT_LINE"}
+{"source": "BIKE Assembly", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "BIKE:Frame Module", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "BIKE:Aluminum Frame", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "BIKE:Suspension Fork", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "BIKE:Headset", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "BIKE:Drivetrain Module", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "BIKE:Crankset", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "BIKE:Chain", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "BIKE:Rear Derailleur", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "BIKE:Shifter", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "BIKE:Pedal", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "BIKE:Wheel Module", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "BIKE:Wheelset", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "BIKE:Tire", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "BIKE:Inner Tube", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "BIKE:Cockpit Module", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "BIKE:Handlebar", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "BIKE:Grip", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "BIKE:Saddle", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "BIKE:Brake Set", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "BIKE:Pack Module", "target": "BIKE", "type": "PART_OF_LINE"}
+{"source": "SAFE Assembly", "target": "SAFE", "type": "PART_OF_LINE"}
+{"source": "SAFE:Body Module", "target": "SAFE", "type": "PART_OF_LINE"}
+{"source": "SAFE:Steel Body Panel", "target": "SAFE", "type": "PART_OF_LINE"}
+{"source": "SAFE:Door Panel", "target": "SAFE", "type": "PART_OF_LINE"}
+{"source": "SAFE:Fireboard Lining", "target": "SAFE", "type": "PART_OF_LINE"}
+{"source": "SAFE:Hinge Set", "target": "SAFE", "type": "PART_OF_LINE"}
+{"source": "SAFE:Lock Module", "target": "SAFE", "type": "PART_OF_LINE"}
+{"source": "SAFE:Combination Lock", "target": "SAFE", "type": "PART_OF_LINE"}
+{"source": "SAFE:Locking Bolt", "target": "SAFE", "type": "PART_OF_LINE"}
+{"source": "SAFE:Handle", "target": "SAFE", "type": "PART_OF_LINE"}
+{"source": "SAFE:Interior Module", "target": "SAFE", "type": "PART_OF_LINE"}
+{"source": "SAFE:Gun Rack", "target": "SAFE", "type": "PART_OF_LINE"}
+{"source": "SAFE:Interior Carpet", "target": "SAFE", "type": "PART_OF_LINE"}
+{"source": "SAFE:Pack Module", "target": "SAFE", "type": "PART_OF_LINE"}
+{"source": "SAFE:Shipping Crate", "target": "SAFE", "type": "PART_OF_LINE"}
+{"source": "KAYAK Assembly", "target": "KAYAK", "type": "PART_OF_LINE"}
+{"source": "KAYAK:Hull Module", "target": "KAYAK", "type": "PART_OF_LINE"}
+{"source": "KAYAK:HDPE Hull", "target": "KAYAK", "type": "PART_OF_LINE"}
+{"source": "KAYAK:Drain Plug", "target": "KAYAK", "type": "PART_OF_LINE"}
+{"source": "KAYAK:Deck Bungee", "target": "KAYAK", "type": "PART_OF_LINE"}
+{"source": "KAYAK:Outfit Module", "target": "KAYAK", "type": "PART_OF_LINE"}
+{"source": "KAYAK:Seat", "target": "KAYAK", "type": "PART_OF_LINE"}
+{"source": "KAYAK:Footrest", "target": "KAYAK", "type": "PART_OF_LINE"}
+{"source": "KAYAK:Carry Handle", "target": "KAYAK", "type": "PART_OF_LINE"}
+{"source": "KAYAK:Paddle", "target": "KAYAK", "type": "PART_OF_LINE"}
+{"source": "KAYAK:Pack Module", "target": "KAYAK", "type": "PART_OF_LINE"}
+{"source": "RIP Assembly", "target": "RIP", "type": "PART_OF_LINE"}
+{"source": "RIP:Frame Module", "target": "RIP", "type": "PART_OF_LINE"}
+{"source": "RIP:Steel Rail", "target": "RIP", "type": "PART_OF_LINE"}
+{"source": "RIP:Bushing", "target": "RIP", "type": "PART_OF_LINE"}
+{"source": "RIP:Wheel", "target": "RIP", "type": "PART_OF_LINE"}
+{"source": "RIP:Grip Module", "target": "RIP", "type": "PART_OF_LINE"}
+{"source": "RIP:Handle Grip", "target": "RIP", "type": "PART_OF_LINE"}
+{"source": "RIP:Pack Module", "target": "RIP", "type": "PART_OF_LINE"}
+{"source": "VEST Assembly", "target": "VEST", "type": "PART_OF_LINE"}
+{"source": "VEST:Shell Module", "target": "VEST", "type": "PART_OF_LINE"}
+{"source": "VEST:Neoprene Shell", "target": "VEST", "type": "PART_OF_LINE"}
+{"source": "VEST:Foam Panel", "target": "VEST", "type": "PART_OF_LINE"}
+{"source": "VEST:Zipper", "target": "VEST", "type": "PART_OF_LINE"}
+{"source": "VEST:Strap Module", "target": "VEST", "type": "PART_OF_LINE"}
+{"source": "VEST:Buckle", "target": "VEST", "type": "PART_OF_LINE"}
+{"source": "VEST:Webbing", "target": "VEST", "type": "PART_OF_LINE"}
+{"source": "VEST:Safety Label", "target": "VEST", "type": "PART_OF_LINE"}
+{"source": "VEST:Pack Module", "target": "VEST", "type": "PART_OF_LINE"}
+{"source": "VEST:Poly Bag", "target": "VEST", "type": "PART_OF_LINE"}
+{"source": "BIKE:Returned Derailleur", "target": "BIKE", "type": "PART_OF_LINE"}
 {"source": "BIKE", "target": "Optimized", "type": "USES_POLICY"}
 {"source": "SAFE", "target": "Optimized", "type": "USES_POLICY"}
 {"source": "KAYAK", "target": "Optimized", "type": "USES_POLICY"}

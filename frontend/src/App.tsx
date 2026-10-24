@@ -8,6 +8,7 @@ const LoginPage = React.lazy(() => import("@/pages/login/LoginPage"));
 const WorkshopListPage = React.lazy(() => import("@/pages/workshop/WorkshopListPage"));
 const WorkshopAppPage = React.lazy(() => import("@/pages/workshop/WorkshopAppPage"));
 const QueryLibraryPage = React.lazy(() => import("@/pages/queries/QueryLibraryPage"));
+const OntologyOverviewPage = React.lazy(() => import("@/pages/ontology/OntologyOverviewPage"));
 
 class AppErrorBoundary extends React.Component<
   { children: React.ReactNode },
@@ -51,12 +52,13 @@ export default function App() {
         <AppErrorBoundary>
           <React.Suspense fallback={<div className="p-6 text-sm text-slate-500">Loading…</div>}>
             <Routes>
-              <Route path="/login" element={LOCAL_SINGLE_USER ? <Navigate to="/apps/workshop" replace /> : <LoginPage />} />
-              <Route path="/" element={<Navigate to="/apps/workshop" replace />} />
+              <Route path="/login" element={LOCAL_SINGLE_USER ? <Navigate to="/ontology" replace /> : <LoginPage />} />
+              <Route path="/" element={<Navigate to="/ontology" replace />} />
               <Route path="/apps/workshop" element={<ProtectedRoute><WorkshopListPage /></ProtectedRoute>} />
               <Route path="/apps/workshop/:appId" element={<ProtectedRoute><WorkshopAppPage /></ProtectedRoute>} />
               <Route path="/apps/queries" element={<ProtectedRoute><QueryLibraryPage /></ProtectedRoute>} />
-              <Route path="*" element={<Navigate to="/apps/workshop" replace />} />
+              <Route path="/ontology" element={<ProtectedRoute><OntologyOverviewPage /></ProtectedRoute>} />
+              <Route path="*" element={<Navigate to="/ontology" replace />} />
             </Routes>
           </React.Suspense>
         </AppErrorBoundary>

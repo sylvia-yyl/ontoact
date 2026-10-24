@@ -332,7 +332,7 @@
       "via": "item"
     },
     {
-      "api_name": "IN_PRODUCT_LINE",
+      "api_name": "FOR_PRODUCT_LINE",
       "source": "CustomerOrder",
       "target": "ProductLine",
       "via": "product_line"
@@ -374,7 +374,7 @@
       "via": "demand_id"
     },
     {
-      "api_name": "IN_PRODUCT_LINE",
+      "api_name": "PART_OF_LINE",
       "source": "ItemMaster",
       "target": "ProductLine",
       "via": "product_line"

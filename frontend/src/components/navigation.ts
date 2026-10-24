@@ -1,4 +1,4 @@
-import { LayoutDashboard, SearchCode } from 'lucide-react'
+import { LayoutDashboard, Network, SearchCode } from 'lucide-react'
 
 export interface NavEntry {
   key: string
@@ -12,6 +12,8 @@ export interface NavEntry {
 }
 
 export const NAV_ENTRIES: NavEntry[] = [
+  { key: 'ontology', label: 'Ontology', icon: Network, hint: 'Object types, links and objects',
+    path: id => (id ? `/ontology?ontology=${id}` : '/ontology'), activeOn: /^\/ontology/ },
   { key: 'apps', label: 'Apps', icon: LayoutDashboard, hint: 'Dashboards and decision workspaces',
     path: id => (id ? `/apps/workshop?ontology=${id}` : '/apps/workshop'), activeOn: /^\/apps\/workshop/ },
   { key: 'queries', label: 'Queries', icon: SearchCode, hint: 'Reusable, versioned ontology queries',
@@ -29,7 +31,7 @@ export function urlForOntologySwitch(pathname: string, search: string, nextId: s
   // An open app or run belongs to the previous ontology, so go back to the list.
   if (pathname.startsWith('/apps/workshop')) return `/apps/workshop?ontology=${nextId}`
   const params = new URLSearchParams(search)
-  if (params.has('ontology') || pathname.startsWith('/apps/queries')) {
+  if (params.has('ontology') || pathname.startsWith('/apps/queries') || pathname === '/ontology') {
     params.set('ontology', nextId)
     return `${pathname}?${params.toString()}`
   }

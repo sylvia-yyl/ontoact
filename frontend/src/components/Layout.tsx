@@ -24,6 +24,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const current = items.find(item => item.id === stored) ?? null
   const currentId = current?.id ?? (ontologies.data ? null : stored)
 
+  // A section opened without an ontology in the URL (sign-in, the logo, a bookmark) uses the last one chosen.
+  useEffect(() => {
+    if (fromUrl || !currentId) return
+    const entry = NAV_ENTRIES.find(row => location.pathname === row.path(null))
+    if (entry) navigate(entry.path(currentId), { replace: true })
+  }, [fromUrl, currentId, location.pathname, navigate])
+
   const switchOntology = (nextId: string) => {
     setStored(nextId || null)
     if (!nextId) return

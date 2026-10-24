@@ -19,6 +19,7 @@ from app.services.v2.authorization_service import redact_link_record, redact_rec
 from app.services.v2.object_query.resources import ResourceService
 from app.routers.v2.object_sets import http_error
 from app.services.v2.object_query.capabilities import capability_payload
+from app.services.v2.object_query.compiler import physical_relation_type
 from app.services.v2.object_query.errors import ObjectQueryError
 from app.services.v2.object_query.metadata import load_sql_metadata
 from app.services.v2.object_query.data_views import as_response, build_live_view, require_ready
@@ -175,6 +176,28 @@ def query_catalog(ontology_id: str, db: Session = Depends(get_db), user=Depends(
         if safe_link is not None:
             visible_links.append(link)
     return {"types": visible_types, "links": visible_links, "metadata_digest": metadata_digest(metadata)}
+
+
+@router.get("/{ontology_id}/object-query/summary")
+def query_summary(ontology_id: str, db: Session = Depends(get_db), user=Depends(get_current_user), graph_service: FalkorDBService = Depends(get_falkordb)):
+    """The visible catalog with live object and link counts, for the ontology overview.
+
+    Counts come from the live graph and are only returned for types and links
+    the caller may see in the catalog.
+    """
+    catalog = query_catalog(ontology_id, db, user)
+    if not graph_service.available:
+        raise HTTPException(status_code=503, detail={"code": "graph_unavailable", "path": "execution", "message": "The graph database is unavailable", "details": {"retryable": True}})
+    counts = graph_service.get_instance_type_counts(ontology_id)
+    rows = graph_service._graph(ontology_id).query(
+        "MATCH (a:Instance)-[r]->(b:Instance) WHERE a._ontology_id = $ontology RETURN a._type, type(r), b._type, count(r)",
+        params={"ontology": ontology_id},
+    ).result_set
+    link_counts = {(str(source), str(relation), str(target)): int(count) for source, relation, target, count in rows}
+    types = [{**item, "count": counts.get(str(item["api_name"]), 0)} for item in catalog["types"]]
+    links = [{**link, "count": link_counts.get((str(link["source_type"]), physical_relation_type(str(link["api_name"])), str(link["target_type"])), 0)}
+             for link in catalog["links"]]
+    return {"types": types, "links": links, "metadata_digest": catalog["metadata_digest"]}
 
 
 @router.get("/{ontology_id}/object-sets/capabilities")

@@ -21,7 +21,7 @@ export default function LoginPage() {
       localStorage.setItem('token', res.access_token)
       const profile = await authApi.profile()
       setAuth(profile, res.access_token)
-      navigate('/apps/workshop')
+      navigate('/ontology')
     } catch (e: unknown) {
       logout()
       const status = getApiErrorStatus(e)

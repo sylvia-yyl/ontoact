@@ -44,9 +44,13 @@ def read_pack(case: str) -> dict:
     for name, meta in manifest["files"].items():
         if hashlib.sha256((folder / name).read_bytes()).hexdigest() != meta["sha256"]:
             raise SystemExit(f"{case}/{name} does not match MANIFEST.json")
+    ontology = json.loads((folder / "ontology.json").read_text(encoding="utf-8"))
+    names = [link["api_name"] for link in ontology["link_types"]]
+    if len(names) != len(set(names)):
+        raise SystemExit(f"{case}: link names must be unique (a query resolves a link by name and direction)")
     app_path = folder / "app.json"
     return {"folder": folder, "manifest": manifest,
-            "ontology": json.loads((folder / "ontology.json").read_text(encoding="utf-8")),
+            "ontology": ontology,
             "objects": _jsonl(folder / "objects.jsonl"), "links": _jsonl(folder / "links.jsonl"),
             "study": json.loads((folder / "study.json").read_text(encoding="utf-8")),
             "app": json.loads(app_path.read_text(encoding="utf-8")) if app_path.exists() else None}
