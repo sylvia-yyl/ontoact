@@ -301,17 +301,30 @@ def plan_portfolio(inputs: dict) -> dict:
         if row["harmed_orders"] or row["quarter_revenue_delta"] < 0:
             row["applicable"] = False
             row["hard_constraints"] = [{"code": "deferral_harms_delivery", "subject": line}]
-    # 4. Fix every critical part of a line at once (one late part still blocks the build).
+    # 4. Fix every critical part of a line at once (one late part still blocks the build),
+    #    shared parts included: the line cannot build without them either.
     singles = [row for row in candidates if row["kind"] in {"expedite", "rework"}]
-    for line in sorted({row["product_line"] for row in singles}):
-        mine = [row for row in singles if row["product_line"] == line]
+    for line in sorted(plan.lines):
+        mine = [row for row in singles if line in plan.part_lines.get(row["item"], ())]
         if len({row["item"] for row in mine}) < 2:
             continue
         expedite = [a["commitment_id"] for row in mine if row["kind"] == "expedite" for a in row["actions"]]
         buy = [a["option_id"] for row in mine if row["kind"] == "rework" for a in row["actions"]]
         candidate(f"combined:{line}", "combined", f"Expedite critical POs + rework for {plan.lines[line]['name']}", line,
                   [dict(a) for row in mine for a in row["actions"]], sim_policy={"expedite": expedite, "buy": buy})
-    # 5. Switch a line's planning policy (best revenue gain per line).
+    # 5. Let orders move to their alternate line; every line sharing it competes for its time.
+    if any(row.get("alternate_resources") for row in plan.raw["demands"]):
+        result, _ = plan.evaluate(None, {"replan": True})
+        moves = [row for row in result["schedule"] if row["reassigned_from"]]
+        if moves:
+            moved_lines = sorted({plan.demand_line[row["demand_id"]] for row in moves})
+            resources = sorted({row["resource"] for row in moves})
+            candidate("reschedule:alternate_lines", "reschedule", f"Move {len(moves)} orders to {', '.join(resources)}", ",".join(moved_lines),
+                      [{"action_type": "reschedule_work_orders", "policy": "earliest_finish_qualified_resource"}]
+                      + [{"action_type": "reassign_work_order", "demand_id": row["demand_id"], "from_resource": row["reassigned_from"],
+                          "to_resource": row["resource"]} for row in moves],
+                      sim_policy={"replan": True})
+    # 6. Switch a line's planning policy (best revenue gain per line).
     for line in plan.lines:
         best = None
         for policy in plan.policies:
