@@ -5,6 +5,7 @@ import { apiClientV2, formatApiError } from '@/api/client'
 import { requestId } from '@/lib/requestId'
 import { AlertList, CoverageGrid, DataTable, DonutChart, GeoMap, KpiStrip, RankBars, StackedBarChart, type MapLink, type MapPoint } from '@/components/dashboard/widgets'
 import { aggregate, asRows, categoryColor, coordinate, formatCell, getPath, groupSeries, groupTotals, matches, plainId, template, tone, withinRange, type Format, type Row, type ToneRule, type Where } from '@/components/dashboard/binding'
+import ImpactGraph, { type Impact } from '@/components/dashboard/ImpactGraph'
 import DecisionPackagePanel from '@/pages/what-if/DecisionPackagePanel'
 import { describe, humanize, type DecisionRunContext } from '@/pages/what-if/decisionPackage'
 import type { ResolvedSource, ResolvedStudyRun, Widget } from './spec'
@@ -68,6 +69,11 @@ export default function WidgetView({ widget, rt }: { widget: Widget; rt: Runtime
     case 'rank_bars': return <RankWidget rows={rows} p={p} rt={rt} title={widget.title} />
     case 'alert_list': return <AlertWidget rows={rows} p={p} rt={rt} title={widget.title} />
     case 'geo_map': return <MapWidget rows={rows} p={p} rt={rt} title={widget.title} />
+    case 'impact_graph': {
+      const candidate = rows.find(row => str(row.id) === rt.vars[str(p.variable)]) ?? rows[0]
+      const impact = candidate ? getPath(candidate, str(p.field) || 'impact') as Impact | undefined : undefined
+      return impact?.nodes ? <ImpactGraph impact={impact} /> : <Empty text="Select an action from the list" />
+    }
     case 'rerun_button': return source?.kind === 'study_run' ? <RerunButton p={p} rt={rt} source={source} /> : <Empty text="Bind a study run data source" />
     default: return <Empty text={`Unknown widget ${widget.type}`} />
   }

@@ -16,7 +16,9 @@ export const humanize = (key: string) => {
   return words.charAt(0).toUpperCase() + words.slice(1)
 }
 
-const valueText = (value: unknown) => Array.isArray(value) ? value.join(', ') : typeof value === 'object' && value !== null ? String((value as { object_id?: string }).object_id ?? JSON.stringify(value)) : String(value)
+// Long lists (e.g. a full allocation order) are summarized; the package keeps every value.
+const valueText = (value: unknown): string => Array.isArray(value) ? (value.length > 6 ? `${value.length} items` : value.join(', ')) :
+  typeof value === 'string' && /^[a-z]+(_[a-z]+)+$/.test(value) ? humanize(value) : typeof value === 'object' && value !== null ? String((value as { object_id?: string }).object_id ?? JSON.stringify(value)) : String(value)
 
 /** The parameters of an action invocation as "Name: value" pairs, without the action type. */
 export function describe(values: Record<string, unknown>): string {

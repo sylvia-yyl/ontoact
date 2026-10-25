@@ -45,7 +45,7 @@ export type ResolvedSource = ResolvedStudyRun | ResolvedOntologySource
 export type FieldKind = 'text' | 'number' | 'boolean' | 'select' | 'scalar_path' | 'field' | 'variable' | 'page' | 'list' | 'color'
 export type FieldSpec = { key: string; label: string; kind: FieldKind; options?: string[]; item?: FieldSpec[]; help?: string }
 export type WidgetType = 'kpi_strip' | 'table' | 'bar_chart' | 'coverage_grid' | 'facet_list' | 'select' | 'stat_row' | 'banner' | 'action_list' | 'action_detail' | 'rerun_button'
-  | 'donut_chart' | 'rank_bars' | 'alert_list' | 'geo_map'
+  | 'donut_chart' | 'rank_bars' | 'alert_list' | 'geo_map' | 'impact_graph'
 export type WidgetSpec = { type: WidgetType; label: string; description: string; w: number; h: number; usesArray: boolean; selectable: boolean; props: FieldSpec[]; defaults: Record<string, unknown> }
 
 const FORMAT = ['text', 'number', 'money', 'percent', 'date']
@@ -53,6 +53,9 @@ const WHERE: FieldSpec[] = [{ key: 'where_field', label: 'Condition field', kind
 const FILTER: FieldSpec[] = [{ key: 'filter_field', label: 'Field filtered by variable', kind: 'field', help: 'Show a row when this field equals (or its array contains) the variable value' }, { key: 'filter_variable', label: 'Filter variable', kind: 'variable' }]
 
 export const WIDGETS: WidgetSpec[] = [
+  { type: 'impact_graph', label: 'Impact graph', description: 'The objects the selected candidate changes: orders, parts, supply and lines.', w: 16, h: 12, usesArray: true, selectable: false,
+    props: [{ key: 'variable', label: 'Selected candidate variable', kind: 'variable' }, { key: 'field', label: 'Impact field', kind: 'field', help: 'A {nodes, edges, summary} object on each candidate (default: impact)' }],
+    defaults: { field: 'impact' } },
   { type: 'kpi_strip', label: 'KPI strip', description: 'A row of large numbers. The first one can be colored by the sign of another value.', w: 24, h: 3, usesArray: false, selectable: false,
     props: [{ key: 'items', label: 'Metrics', kind: 'list', item: [{ key: 'label', label: 'Name', kind: 'text' }, { key: 'path', label: 'Value', kind: 'scalar_path' }, { key: 'format', label: 'Format', kind: 'select', options: FORMAT },
       { key: 'note', label: 'Note (supports {path|format})', kind: 'text' }, { key: 'tone_path', label: 'Color by the sign of', kind: 'scalar_path' }] }],

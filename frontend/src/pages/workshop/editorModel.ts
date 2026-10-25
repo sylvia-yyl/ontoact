@@ -8,6 +8,7 @@ const REQUIRED_PROPS: Record<string, string[]> = {
   facet_list: ['field'], select: ['value_field', 'label_field', 'variable'], stat_row: ['items'], banner: ['template'],
   action_list: ['label_field'], action_detail: ['variable'], rerun_button: ['steps'],
   donut_chart: ['category_field'], rank_bars: ['label_field'], alert_list: ['title'], geo_map: ['lat_field', 'lng_field'],
+  impact_graph: ['variable'],
 }
 
 /** References that make deleting a builder resource unsafe. */
