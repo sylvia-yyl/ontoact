@@ -3,13 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.deps import get_current_user, get_db
 from app.models.v2.scenario import ScenarioAudit, ScenarioChangeSet, ScenarioGrant, ScenarioResource, ScenarioRevision, ScenarioRun, ScenarioRunStage
-from app.models.v2.logic_asset import LogicAsset
-from app.schemas.v2.scenario import ChangeSetRequest, CreateScenarioRequest, GrantRequest, RevisionRequest, RunRequest, Edit
+from app.schemas.v2.scenario import ChangeSetRequest, CreateScenarioRequest, GrantRequest, RevisionRequest, Edit
 from uuid import uuid4
-from app.services.v2.logic_assets import ASSET_DEFINITIONS
-from app.services.v2.object_query.normalize import stable_hash
 from app.services.v2.scenarios import ScenarioError, ScenarioService, _summary, error
-from app.services.v2.scenario_execution import STAGES, submit_run
 
 router = APIRouter()
 
@@ -166,40 +162,6 @@ def grant(ontology_id: str, scenario_id: str, request: GrantRequest, svc=Depends
         else: svc.db.add(ScenarioGrant(scenario_id=scenario.id, principal_id=request.principal_id, role=request.role))
         svc.db.add(ScenarioAudit(scenario_id=scenario.id, actor_id=svc.user.id, operation="grant", summary=request.model_dump()))
         svc.db.commit(); return {"scenario_id": scenario.id, "principal_id": request.principal_id, "role": request.role}
-    except ScenarioError as exc:
-        _http(exc)
-
-
-@router.post("/{ontology_id}/scenarios/{scenario_id}/runs", status_code=202)
-def run_logic(ontology_id: str, scenario_id: str, request: RunRequest, svc=Depends(service)):
-    try:
-        _require_editor(svc.user)
-        scenario = svc.get(scenario_id, write=True)
-        if request.revision > scenario.head_revision:
-            raise ScenarioError("revision_not_found", "Run revision is not available", 404, "revision")
-        definition = next((item for item in ASSET_DEFINITIONS if item["asset_key"] == request.logic_asset_key), None)
-        if not definition:
-            raise ScenarioError("logic_asset_not_found", "Logic asset is not registered", 404, "logic_asset_key")
-        asset = svc.db.query(LogicAsset).filter_by(ontology_id=ontology_id, asset_key=request.logic_asset_key).first()
-        if not asset:
-            asset = LogicAsset(ontology_id=ontology_id, **definition); svc.db.add(asset); svc.db.flush()
-        run = ScenarioRun(scenario_id=scenario.id, revision=request.revision, case_key=request.case_key,
-                          logic_asset_key=request.logic_asset_key, logic_version=request.logic_version,
-                          parameters=request.parameters, status="queued", current_stage="queued", progress=0,
-                          input_digest=stable_hash(request.parameters), created_by=svc.user.id)
-        svc.db.add(run); svc.db.flush()
-        svc.db.add_all([ScenarioRunStage(run_id=run.id, sequence=index + 1, stage_key=stage) for index, stage in enumerate(STAGES)])
-        svc.db.add(ScenarioAudit(scenario_id=scenario.id, run_id=run.id, actor_id=svc.user.id, operation="run_logic", summary={"asset_key": request.logic_asset_key, "status": run.status}))
-        svc.db.commit()
-        try:
-            submit_run(run.id)
-            svc.db.commit()
-        except Exception as exc:
-            run.status = "failed"
-            run.current_stage = "dispatch"
-            run.error_json = {"code": "dispatch_failed", "message": str(exc)}
-            svc.db.commit()
-        return {"id": run.id, "scenario_id": run.scenario_id, "revision": run.revision, "case_key": run.case_key, "logic_asset_key": run.logic_asset_key, "status": run.status, "progress": run.progress, "current_stage": run.current_stage, "output_digest": run.output_digest, "error": run.error_json}
     except ScenarioError as exc:
         _http(exc)
 

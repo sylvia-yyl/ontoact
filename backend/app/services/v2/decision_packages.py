@@ -58,13 +58,14 @@ def transition(package, event: str, actor_id: str, *, expected_etag: int, reason
 # merge commits, because they cannot share the database transaction.
 
 
-class FakeProcurementConnector:
-    """Local stand-in for an ERP/procurement API; idempotent by key.
+class SandboxProcurementConnector:
+    """Local sandbox in place of an ERP/procurement API; idempotent by key.
 
-    Deliberately not presented as a real integration.  ``fail_keys`` lets tests
-    simulate a partial external failure.
+    Receipts name the sandbox, so they are never mistaken for a real
+    integration.  ``fail_keys`` lets tests simulate a partial external failure.
     """
-    name = "fake-erp"
+    name = "sandbox-erp"
+    label = "Sandbox ERP"
 
     def __init__(self):
         self.fail_keys: set[str] = set()
@@ -74,12 +75,12 @@ class FakeProcurementConnector:
         if key in self.fail_keys:
             raise ConnectionError("procurement endpoint unavailable")
         if key not in self.sent:
-            self.sent[key] = {"connector": self.name, "external_id": f"ERP-{sha256(key.encode()).hexdigest()[:10]}",
+            self.sent[key] = {"connector": self.name, "connector_label": self.label, "external_id": f"ERP-{sha256(key.encode()).hexdigest()[:10]}",
                               "idempotency_key": key, "payload_digest": stable_digest(payload)}
         return self.sent[key]
 
 
-procurement_connector = FakeProcurementConnector()
+procurement_connector = SandboxProcurementConnector()
 
 
 def _event(db, package, event_type, actor_id, request_id, *, before=None, reason=""):

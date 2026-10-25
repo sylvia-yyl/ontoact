@@ -4,7 +4,7 @@ import { apiClientV2 } from '@/api/client'
 export type DecisionRunContext = { ontologyId: string; runId: string; scenarioId: string; scenarioRevision: number; nodeKey: string; artifact?: { id: string; content_digest: string } }
 export type PackageEdit = { sequence: number; op: string; target?: { concrete_type: string; object_id: string } | null; property?: string | null; value?: unknown; expected_old_value?: unknown; properties?: Record<string, unknown> }
 export type PackageAction = { id: string; action_type_id: string; expected_edits: PackageEdit[]; external_effect_class: string; receipt: Record<string, unknown> | null }
-export type DecisionPackage = { id: string; run_id: string; evidence: Array<{ reference: { candidate_id?: string } }>; status: string; etag: number; created_by: string; title: string; actions: PackageAction[]; outbox: Array<{ id: string; delivered: boolean; attempts: number }>; events: Array<{ sequence: number; event_type: string; actor_id: string; reason: string }> }
+export type DecisionPackage = { id: string; run_id: string; evidence: Array<{ reference: { candidate_id?: string } }>; status: string; etag: number; created_by: string; title: string; actions: PackageAction[]; outbox: Array<{ id: string; delivered: boolean; attempts: number }>; events: Array<{ sequence: number; event_type: string; actor_id: string; actor_name?: string; reason: string; created_at?: string }> }
 export type Delivery = { external_effects: number; delivered: number; status: 'complete' | 'external_effect_partial' }
 
 // Seeded object ids may carry an ontology namespace ("5ef77329:ORD-1009"); show the business id.

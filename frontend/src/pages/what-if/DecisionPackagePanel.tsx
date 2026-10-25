@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { apiClientV2, formatApiError } from '@/api/client'
+import { requestId } from '@/lib/requestId'
 import './decision-package.css'
 import { describe, humanize, plain, useRunPackage, type DecisionPackage, type DecisionRunContext, type Delivery } from './decisionPackage'
 
 const editLabel: Record<string, string> = { set_property: 'Set', create_object: 'Create', delete_object: 'Delete', unset_property: 'Clear' }
+const eventLabel: Record<string, string> = { created: 'Created', submit: 'Submitted for review', approve: 'Approved', reject: 'Rejected', revise: 'Returned to draft', begin_apply: 'Apply started', apply_succeeded: 'Applied', apply_failed: 'Apply failed', revert: 'Reverted', supersede: 'Superseded' }
 const packageStatus: Record<string, string> = { draft: 'Draft', in_review: 'In review', approved: 'Approved', rejected: 'Rejected', applying: 'Applying', applied: 'Applied', apply_failed: 'Apply failed', reverted: 'Reverted', superseded: 'Superseded' }
 
 export default function DecisionPackagePanel({ context, candidate, actionLabel = {} }: { context?: DecisionRunContext; candidate: { id: string; applicable: boolean }; actionLabel?: Record<string, string> }) {
@@ -19,12 +21,12 @@ export default function DecisionPackagePanel({ context, candidate, actionLabel =
     onSuccess: setPkg,
   })
   const transition = useMutation({
-    mutationFn: (event: 'submit' | 'approve' | 'reject' | 'revise') => apiClientV2.post<DecisionPackage>(`${packagesUrl}/${pkg!.id}/transition`, { event, expected_etag: pkg!.etag, request_id: crypto.randomUUID(), reason: reviewReason.trim() }),
+    mutationFn: (event: 'submit' | 'approve' | 'reject' | 'revise') => apiClientV2.post<DecisionPackage>(`${packagesUrl}/${pkg!.id}/transition`, { event, expected_etag: pkg!.etag, request_id: requestId(), reason: reviewReason.trim() }),
     onSuccess: setPkg,
   })
   // One request id per click; a retried request is answered from the recorded event.
   const command = useMutation({
-    mutationFn: (verb: 'apply' | 'revert' | 'deliver-outbox') => apiClientV2.post<{ package: DecisionPackage; delivery?: Delivery }>(`${packagesUrl}/${pkg!.id}:${verb}`, verb === 'deliver-outbox' ? undefined : { expected_etag: pkg!.etag, request_id: crypto.randomUUID() }),
+    mutationFn: (verb: 'apply' | 'revert' | 'deliver-outbox') => apiClientV2.post<{ package: DecisionPackage; delivery?: Delivery }>(`${packagesUrl}/${pkg!.id}:${verb}`, verb === 'deliver-outbox' ? undefined : { expected_etag: pkg!.etag, request_id: requestId() }),
     onSuccess: result => { setPkg(result.package); if (result.delivery) setDelivery(result.delivery) },
   })
   const error = createPackage.error || transition.error || command.error
@@ -48,7 +50,7 @@ export default function DecisionPackagePanel({ context, candidate, actionLabel =
       {pkg.status === 'rejected' && <button className="wb-button-secondary" disabled={transition.isPending} onClick={() => transition.mutate('revise')}>Back to draft</button>}
       {(pkg.status === 'approved' || pkg.status === 'apply_failed') && <button className="wb-button-primary" disabled={command.isPending} onClick={() => command.mutate('apply')}>{pkg.status === 'apply_failed' ? 'Retry apply' : 'Apply to ontology'}</button>}
       {pkg.status === 'applied' && <>
-        <ul className="package-receipts" data-testid="package-receipts">{pkg.actions.filter(action => action.external_effect_class !== 'none').map(action => <li key={action.id}>{label(action.action_type_id)} · {action.receipt ? `Receipt ${String(action.receipt.external_id)}` : 'Pending'}</li>)}</ul>
+        <ul className="package-receipts" data-testid="package-receipts">{pkg.actions.filter(action => action.external_effect_class !== 'none').map(action => <li key={action.id}>{label(action.action_type_id)} · {action.receipt ? `${String(action.receipt.connector_label ?? action.receipt.connector)} · receipt ${String(action.receipt.external_id)}` : 'Pending'}</li>)}</ul>
         {delivery?.status === 'external_effect_partial' && <p className="candidate-warning">Ontology changes are applied, but {delivery.external_effects - delivery.delivered} external notifications were not delivered.</p>}
         <div className="package-buttons">
           {pkg.outbox.some(row => !row.delivered) && <button className="wb-button-secondary" disabled={command.isPending} onClick={() => command.mutate('deliver-outbox')}>Resend notifications</button>}
@@ -56,7 +58,7 @@ export default function DecisionPackagePanel({ context, candidate, actionLabel =
         </div>
       </>}
       {pkg.status === 'reverted' && pkg.actions.some(action => action.receipt) && <p className="candidate-warning">Ontology changes are reverted. Notifications already sent to external parties cannot be recalled; follow up with them directly.</p>}
-      <ol className="package-events">{pkg.events.map(row => <li key={row.sequence}>{row.event_type} · {row.actor_id.slice(0, 8)}{row.reason ? ` · ${row.reason}` : ''}</li>)}</ol>
+      <ol className="package-events">{pkg.events.map(row => <li key={row.sequence}>{eventLabel[row.event_type] ?? humanize(row.event_type)} by {row.actor_name ?? 'another user'}{row.created_at ? ` · ${new Date(row.created_at).toLocaleString()}` : ''}{row.reason ? ` · ${row.reason}` : ''}</li>)}</ol>
     </div>}
     {error && <p role="alert" className="candidate-warning">{formatApiError(error)}</p>}
     <p className="candidate-note">Once submitted, the referenced run and scenario revision are frozen. The author of a package cannot approve it.</p>

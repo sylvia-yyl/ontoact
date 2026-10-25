@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field, field_validator
 from sqlalchemy.orm import Session
 from app.deps import get_db, get_current_user, require_editor
 from app.models.ontology import OntologyProject
+from app.models.user import User
 from app.models.v2.decision import (DecisionPackage,
     DecisionPackageAction, DecisionPackageEvidence, DecisionPackageEvent, DecisionOutbox)
 from app.models.v2.scenario import ScenarioResource, ScenarioRun, ScenarioRunArtifact
@@ -74,6 +75,7 @@ def package_json(db, item):
     actions = db.query(DecisionPackageAction).filter_by(package_id=item.id).order_by(DecisionPackageAction.sequence).all()
     evidence = db.query(DecisionPackageEvidence).filter_by(package_id=item.id).all()
     events = db.query(DecisionPackageEvent).filter_by(package_id=item.id).order_by(DecisionPackageEvent.sequence).all()
+    names = dict(db.query(User.id, User.username).filter(User.id.in_({row.actor_id for row in events})).all())
     outbox = db.query(DecisionOutbox).filter_by(package_id=item.id).all()
     return {"id": item.id, "scenario_id": item.scenario_id, "scenario_revision": item.scenario_revision,
             "run_id": item.run_id, "title": item.title, "rationale": item.rationale, "status": item.status,
@@ -85,8 +87,8 @@ def package_json(db, item):
                          "external_effect_class": row.external_effect_class, "receipt": row.receipt} for row in actions],
             "evidence": [{"id": row.id, "evidence_type": row.evidence_type, "reference": row.reference,
                           "content_digest": row.content_digest} for row in evidence],
-            "events": [{"sequence": row.sequence, "event_type": row.event_type, "actor_id": row.actor_id,
-                        "reason": row.reason, "request_id": row.request_id} for row in events]}
+            "events": [{"sequence": row.sequence, "event_type": row.event_type, "actor_id": row.actor_id, "actor_name": names.get(row.actor_id),
+                        "reason": row.reason, "request_id": row.request_id, "created_at": row.created_at.isoformat()} for row in events]}
 
 
 @router.get('/{oid}/decision-packages')

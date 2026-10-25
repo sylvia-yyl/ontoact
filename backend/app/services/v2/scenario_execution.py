@@ -16,11 +16,6 @@ from concurrent.futures import ThreadPoolExecutor
 
 from app.models.user import User
 
-STAGES = (
-    "validate_action", "apply_changeset", "bind_scenario_data",
-    "run_supply_model", "calculate_impact", "materialize_results", "finalize",
-)
-
 def _now():
     return datetime.now(timezone.utc)
 
@@ -99,9 +94,7 @@ def run_scenario(run_id: str):
 
 def _execute_run(run_id: str):
     from app.database import SessionLocal
-    from app.models.v2.scenario import ScenarioRun, ScenarioRunStage
-    from app.services.v2.logic_assets import ASSET_DEFINITIONS, execute
-    from app.services.v2.object_query.normalize import stable_hash
+    from app.models.v2.scenario import ScenarioRun
 
     db = SessionLocal()
     started = monotonic()
@@ -111,51 +104,9 @@ def _execute_run(run_id: str):
             return
         if run.run_plan_id:
             return _execute_study_run(db, run, started)
-        stages = db.query(ScenarioRunStage).filter_by(run_id=run.id).order_by(ScenarioRunStage.sequence).all()
-        if not stages:
-            stages = [ScenarioRunStage(run_id=run.id, sequence=i + 1, stage_key=key) for i, key in enumerate(STAGES)]
-            db.add_all(stages); db.commit()
-        run.status = "running"; run.started_at = run.started_at or _now(); run.current_stage = STAGES[0]; db.commit()
-        result = None
-        for index, stage in enumerate(stages):
-            db.refresh(run)
-            if run.cancel_requested:
-                _commit_stage(db, stage, "cancelled", error={"code": "cancelled"})
-                run.status = "cancelled"; run.current_stage = "cancelled"; run.progress = int(index / len(stages) * 100)
-                db.commit(); return
-            _commit_stage(db, stage, "running")
-            run.current_stage = stage.stage_key; run.progress = int(index / len(stages) * 100); db.commit()
-            try:
-                if stage.stage_key == "validate_action":
-                    if not run.parameters:
-                        raise ValueError("scenario inputs are empty")
-                    summary = {"input_digest": run.input_digest, "case_key": run.case_key}
-                elif stage.stage_key == "apply_changeset":
-                    summary = {"revision": run.revision, "changeset": "baseline-noop" if run.revision == 0 else "submitted-revision"}
-                elif stage.stage_key == "bind_scenario_data":
-                    summary = {"context": "scenario snapshot", "completeness": "exact", "objects": 16}
-                elif stage.stage_key == "run_supply_model":
-                    definition = next((item for item in ASSET_DEFINITIONS if item["asset_key"] == run.logic_asset_key), None)
-                    if not definition:
-                        raise ValueError("logic asset is not registered")
-                    result = execute(definition, run.parameters)
-                    summary = {"logic_asset": run.logic_asset_key, "version": run.logic_version, "output_digest": stable_hash(result)}
-                elif stage.stage_key == "calculate_impact":
-                    output = (result or {}).get("output", {})
-                    summary = {"path_count": len(output.get("paths", [])), "shortage_count": len(output.get("shortages", [])), "bounded": True}
-                elif stage.stage_key == "materialize_results":
-                    output = (result or {}).get("output", {})
-                    run.result_manifest = {"output": output, "metrics": _metrics(run.case_key, output), "warnings": _warnings(output), "provenance": {"scenario_revision": run.revision, "logic_asset": run.logic_asset_key, "logic_version": run.logic_version, "input_digest": run.input_digest, "completeness": "exact"}}
-                    run.output_digest = stable_hash(run.result_manifest)
-                    summary = {"artifact": "scenario-result-manifest", "output_digest": run.output_digest}
-                else:
-                    summary = {"status": "complete", "artifact_digest": run.output_digest}
-                _commit_stage(db, stage, "completed", summary=summary)
-                run.progress = int((index + 1) / len(stages) * 100); db.commit()
-            except Exception as exc:
-                _commit_stage(db, stage, "failed", error={"code": "stage_failed", "message": str(exc)})
-                run.status = "failed"; run.current_stage = stage.stage_key; run.progress = int(index / len(stages) * 100); run.error_json = {"code": "stage_failed", "stage": stage.stage_key, "message": str(exc)}; run.completed_at = _now(); run.duration_ms = int((monotonic() - started) * 1000); db.commit(); return
-        run.status = "completed"; run.current_stage = "complete"; run.progress = 100; run.completed_at = _now(); run.duration_ms = int((monotonic() - started) * 1000); db.commit()
+        # Every run is compiled from a published study; anything else is not executable.
+        run.status = "failed"; run.error_json = {"code": "run_plan_missing", "message": "Run has no compiled study plan"}
+        run.completed_at = _now(); db.commit()
     finally:
         db.close()
 
@@ -557,11 +508,3 @@ def _execute_study_run(db, run, started):
     db.commit()
 
 
-def _metrics(case_key, output):
-    shortages = output.get("shortages", [])
-    return [
-        {"key": "shortage_quantity", "label": "Shortage quantity", "value": round(sum(float(item.get("quantity", 0)) for item in shortages), 2), "unit": "units", "completeness": "exact"},
-    ]
-
-def _warnings(output):
-    return [{"code": "shortage_detected", "severity": "warning", "message": f"{len(output.get('shortages', []))} bounded demand impact(s) detected"}] if output.get("shortages") else []

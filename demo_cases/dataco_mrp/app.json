@@ -275,7 +275,7 @@
         "value_field": "quantity",
         "where_field": "at_risk",
         "where_equals": "true",
-        "color": "#b91c1c"
+        "color": "#93c5fd"
        }
       ],
       "filter_field": "product_line",
@@ -484,12 +484,12 @@
       "label": "Re-run plan and update forecast",
       "steps": [
        {
-        "label": "Generating New Orders",
+        "label": "Planned orders",
         "path": "totals.planned_orders",
         "format": "number"
        },
        {
-        "label": "Updating Financial Forecast",
+        "label": "Projected revenue",
         "path": "totals.projected_revenue",
         "format": "money"
        },

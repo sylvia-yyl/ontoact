@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 import os
 import re
+from datetime import datetime, timezone
 from hashlib import sha256
 
 import httpx
@@ -135,5 +136,6 @@ def explain(outputs: dict, candidate: dict, *, client: httpx.Client | None = Non
     answer = json.loads(payload["choices"][0]["message"]["content"])
     check = verify(answer, evidence)
     return {"schema": "explanation/v1", "candidate_id": candidate["id"], "model": payload.get("model", model),
+            "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "prompt_digest": sha256((SYSTEM + user).encode()).hexdigest(), "evidence": evidence, "answer": answer, **check,
             "usage": payload.get("usage")}
