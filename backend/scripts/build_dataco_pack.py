@@ -79,6 +79,7 @@ POLICIES = {
 }
 INITIAL_POLICY = {"BIKE": "Optimized", "SAFE": "Optimized", "KAYAK": "Optimized", "RIP": "Cash Preserving", "VEST": "Grey Swan"}
 SEGMENT_PRIORITY = {"Corporate": 3, "Home Office": 2, "Consumer": 1}
+SEGMENT_CODE = {"Corporate": "CORP", "Home Office": "HOME", "Consumer": "CONS"}
 
 # Shared parts are drawn from one pool by every line that uses them.
 #   name: (unit cost, lead days, supplier, coverage of horizon demand, on-hand share)
@@ -89,6 +90,8 @@ VARIANTS = {
         "shared": {"Shipping Carton": None, "Hardware Kit": None},     # shared but plentiful
         "disrupted": {("BIKE", "Aluminum Frame"), ("BIKE", "Rear Derailleur"), ("SAFE", "Combination Lock")},
         "flex": None,
+        "split_segments": False,
+        "outages": [],
     },
     "coupled": {
         # One steel sheet replaces the safe's panels and the trainer's rail; one foam
@@ -106,6 +109,10 @@ VARIANTS = {
                       (None, "Cold-rolled Steel Sheet")},
         # Plant B's flex line can build bikes and kayaks; contract work already holds some of it.
         "flex": {"resource": "FLEX line", "lines": ("BIKE", "KAYAK"), "booked": [(0, 21), (49, 63)]},
+        # One demand event per customer segment, so a corporate order and a consumer order can be served differently.
+        "split_segments": True,
+        # What-if case: one supplier ships every open PO three weeks late.
+        "outages": [{"key": "supplier_outage", "supplier": "Northwind Components", "days": 21}],
     },
 }
 REWORK = {("BIKE", "Rear Derailleur"): "Returned Derailleur"}        # refurbish returned parts
@@ -145,8 +152,9 @@ def build(csv_path, variant: str = "coupled") -> dict:
     end = PLANNING_DATE + timedelta(weeks=HORIZON_WEEKS)
     frame = frame[(frame["due"].dt.date >= PLANNING_DATE) & (frame["due"].dt.date < end)]
     frame["month"] = frame["due"].dt.to_period("M")
-    # One demand event = one product, one market, one month of real orders.
-    grouped = frame.groupby(["Product Name", "Market", "month"]).agg(
+    # One demand event = one product, one market, one month (and, if split, one customer segment) of real orders.
+    keys = ["Product Name", "Market", "month"] + (["Customer Segment"] if config["split_segments"] else [])
+    grouped = frame.groupby(keys).agg(
         quantity=("Order Item Quantity", "sum"), due=("due", "max"), price=("Product Price", "first"),
         orders=("Order Item Quantity", "size"), segment=("Customer Segment", lambda s: s.mode().iloc[0]))
     rng = random.Random(SEED)
@@ -184,14 +192,18 @@ def build(csv_path, variant: str = "coupled") -> dict:
                               "unit_cost": unit_cost, "lead_time_days": spec[1] if spec else lead,
                               "critical": ((None if name in shared else code), name) in disrupted})
     flex = config["flex"]
-    for (product, market, month), row in grouped.iterrows():
+    for key, row in grouped.iterrows():
+        product, market, month = key[:3]
         code = PRODUCTS[product][0]
         line = next(item for item in lines if item["id"] == code)
-        demand = {"id": f"DE-{code}-{market[:3].upper()}-{month.strftime('%y%m')}", "item": f"{code} Assembly", "product_line": code,
+        segment = f"-{SEGMENT_CODE[row['segment']]}" if config["split_segments"] else ""
+        demand = {"id": f"DE-{code}-{market[:3].upper()}{segment}-{month.strftime('%y%m')}", "item": f"{code} Assembly", "product_line": code,
                   "customer": market, "quantity": int(row["quantity"]), "due_at": _day(row["due"].date()),
                   "priority": SEGMENT_PRIORITY.get(row["segment"], 1), "unit_revenue": round(float(row["price"]), 2),
                   "processing_days": round(int(row["quantity"]) / line["weekly_rate"] * 7, 2), "resource": f"{code} line",
                   "source_orders": int(row["orders"])}
+        if config["split_segments"]:
+            demand["segment"] = row["segment"]
         if flex and code in flex["lines"]:
             demand["alternate_resources"] = [flex["resource"]]
         demands.append(demand)
@@ -254,7 +266,12 @@ def build(csv_path, variant: str = "coupled") -> dict:
     notional = "BOM, stock, POs, capacity, supplier disruption, quality hold"
     if variant == "coupled":
         notional = "BOM with shared materials, stock, POs, line and flex capacity, supplier disruptions, quality hold"
-    return {"scenario_time": f"{PLANNING_DATE.isoformat()}T00:00:00Z", "horizon_weeks": HORIZON_WEEKS,
+    cases = [{"key": outage["key"], "name": f"{outage['supplier']} ships {outage['days']} days late",
+              "edits": [{"object_type": "SupplyCommitment", "object_id": row["id"], "property": "available_at",
+                         "value": row["available_at"] + outage["days"], "expected_old_value": row["available_at"]}
+                        for row in commitments if row["supplier"] == outage["supplier"]]}
+             for outage in config["outages"]]
+    return {"scenario_time": f"{PLANNING_DATE.isoformat()}T00:00:00Z", "horizon_weeks": HORIZON_WEEKS, "cases": cases,
             "quarter_start": _day(QUARTER[0]), "quarter_end": _day(QUARTER[1]),
             "product_lines": lines, "policy_definitions": [{"id": key, **value} for key, value in POLICIES.items()],
             "items": items, "demands": demands, "boms": boms, "inventory": inventory, "reservations": [],
@@ -308,6 +325,10 @@ def write_pack(fixture: dict, folder: Path) -> dict:
     })
     _write_jsonl(folder / "objects.jsonl", [{"id": n["id"], "type": n["entity_type"], "properties": n["properties"]} for n in nodes])
     _write_jsonl(folder / "links.jsonl", links)
+    if fixture["cases"]:
+        _write_json(folder / "cases.json", fixture["cases"])
+    elif (folder / "cases.json").exists():
+        (folder / "cases.json").unlink()
     files = {}
     for path in sorted(folder.iterdir()):
         if path.name != "MANIFEST.json":

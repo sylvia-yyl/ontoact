@@ -7,6 +7,14 @@
    "label": "Quarterly Planning",
    "study_id": "__STUDY_ID__",
    "node": "plan"
+  },
+  {
+   "id": "outage",
+   "kind": "study_run",
+   "label": "Supplier outage",
+   "study_id": "__STUDY_ID__",
+   "node": "plan",
+   "case": "supplier_outage"
   }
  ],
  "variables": [
@@ -21,6 +29,10 @@
   {
    "id": "action",
    "label": "Actions"
+  },
+  {
+   "id": "outage_action",
+   "label": "Outage response"
   }
  ],
  "pages": [
@@ -500,6 +512,17 @@
        }
       ]
      }
+    },
+    {
+     "id": "impact",
+     "type": "impact_graph",
+     "title": "What this action changes",
+     "source": "plan",
+     "path": "candidate_actions",
+     "props": {
+      "variable": "action",
+      "field": "impact"
+     }
     }
    ],
    "layout": [
@@ -508,21 +531,186 @@
      "x": 0,
      "y": 0,
      "w": 8,
-     "h": 21
+     "h": 31
     },
     {
      "i": "detail",
      "x": 8,
      "y": 0,
      "w": 16,
-     "h": 19
+     "h": 13
+    },
+    {
+     "i": "impact",
+     "x": 8,
+     "y": 13,
+     "w": 16,
+     "h": 16
     },
     {
      "i": "rerun",
      "x": 8,
-     "y": 19,
+     "y": 29,
      "w": 16,
      "h": 2
+    }
+   ]
+  },
+  {
+   "id": "outage",
+   "title": "Supplier Outage",
+   "widgets": [
+    {
+     "id": "normal",
+     "type": "kpi_strip",
+     "title": "Current plan",
+     "source": "plan",
+     "path": "",
+     "props": {
+      "items": [
+       {
+        "label": "Projected Revenue",
+        "path": "totals.projected_revenue",
+        "format": "money",
+        "note": "{totals.revenue_gap|money} to quarterly target",
+        "tone_path": "totals.revenue_gap"
+       },
+       {
+        "label": "OTIF",
+        "path": "totals.otif",
+        "format": "percent"
+       },
+       {
+        "label": "Demand events at risk",
+        "path": "totals.at_risk",
+        "format": "number"
+       }
+      ]
+     }
+    },
+    {
+     "id": "during",
+     "type": "kpi_strip",
+     "title": "If Northwind Components ships 21 days late",
+     "source": "outage",
+     "path": "",
+     "props": {
+      "items": [
+       {
+        "label": "Projected Revenue",
+        "path": "totals.projected_revenue",
+        "format": "money",
+        "note": "{totals.revenue_gap|money} to quarterly target",
+        "tone_path": "totals.revenue_gap"
+       },
+       {
+        "label": "OTIF",
+        "path": "totals.otif",
+        "format": "percent"
+       },
+       {
+        "label": "Demand events at risk",
+        "path": "totals.at_risk",
+        "format": "number"
+       }
+      ]
+     }
+    },
+    {
+     "id": "outageActions",
+     "type": "action_list",
+     "title": "Responses",
+     "source": "outage",
+     "path": "candidate_actions",
+     "props": {
+      "label_field": "label",
+      "subtitle": "Quarterly revenue {quarter_revenue_delta|money} · Cost {incremental_cost|money}",
+      "variable": "outage_action"
+     }
+    },
+    {
+     "id": "outageDetail",
+     "type": "action_detail",
+     "title": "Response",
+     "source": "outage",
+     "path": "candidate_actions",
+     "props": {
+      "variable": "outage_action",
+      "explain": true,
+      "metrics": [
+       {
+        "label": "Projected quarterly revenue",
+        "before_path": "totals.projected_revenue",
+        "after_field": "quarter_revenue_after",
+        "format": "money"
+       },
+       {
+        "label": "OTIF",
+        "before_path": "totals.otif",
+        "after_field": "otif_after",
+        "format": "percent"
+       },
+       {
+        "label": "Demand events at risk",
+        "before_path": "totals.at_risk",
+        "after_field": "at_risk_after",
+        "format": "number"
+       },
+       {
+        "label": "Incremental cost",
+        "after_field": "incremental_cost",
+        "format": "money"
+       }
+      ]
+     }
+    },
+    {
+     "id": "outageImpact",
+     "type": "impact_graph",
+     "title": "What this response changes",
+     "source": "outage",
+     "path": "candidate_actions",
+     "props": {
+      "variable": "outage_action",
+      "field": "impact"
+     }
+    }
+   ],
+   "layout": [
+    {
+     "i": "normal",
+     "x": 0,
+     "y": 0,
+     "w": 12,
+     "h": 3
+    },
+    {
+     "i": "during",
+     "x": 12,
+     "y": 0,
+     "w": 12,
+     "h": 3
+    },
+    {
+     "i": "outageActions",
+     "x": 0,
+     "y": 3,
+     "w": 8,
+     "h": 29
+    },
+    {
+     "i": "outageDetail",
+     "x": 8,
+     "y": 3,
+     "w": 16,
+     "h": 13
+    },
+    {
+     "i": "outageImpact",
+     "x": 8,
+     "y": 16,
+     "w": 16,
+     "h": 16
     }
    ]
   }

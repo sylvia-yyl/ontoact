@@ -47,7 +47,9 @@ def read_pack(case: str) -> dict:
     if len(names) != len(set(names)):
         raise SystemExit(f"{case}: link names must be unique (a query resolves a link by name and direction)")
     app_path = folder / "app.json"
-    return {"folder": folder, "manifest": manifest,
+    cases_path = folder / "cases.json"
+    return {"cases": json.loads(cases_path.read_text(encoding="utf-8")) if cases_path.exists() else [],
+            "folder": folder, "manifest": manifest,
             "ontology": ontology,
             "objects": _jsonl(folder / "objects.jsonl"), "links": _jsonl(folder / "links.jsonl"),
             "study": json.loads((folder / "study.json").read_text(encoding="utf-8")),
@@ -132,20 +134,40 @@ def main():
                                  json={"expected_etag": study["etag"], "change_note": "Initial version"}))
         view = ok(client.post(f"{api}/object-query/data-views",
                               json={"source_ontology_id": oid, "source_manifest_digest": pack["manifest"]["files"]["objects.jsonl"]["sha256"]}))
-        scenario = ok(client.post(f"{api}/scenarios", json={"name": "Baseline", "base_view_id": view["view_id"]}))
-        case = ok(client.post(f"{api}/scenario-study-definitions/{study['id']}/cases",
-                              json={"study_version": version["version"], "scenario_id": scenario["id"], "name": "Baseline", "case_kind": "baseline"}))
-        ok(client.post(f"{api}/scenario-study-definitions/{study['id']}/cases/{case['id']}:compile"))
-        run = ok(client.post(f"{api}/scenario-study-definitions/{study['id']}/cases/{case['id']}/runs",
-                             json={"expected_etag": case["etag"], "client_request_id": f"seed-{args.case}"}))
-        started = time.monotonic()
-        while True:
-            state = ok(client.get(f"{api}/scenario-study-runs/{run['id']}"))
-            if state["status"] in ("completed", "failed", "cancelled") or time.monotonic() - started > 300:
-                break
-            time.sleep(1)
-        if state["status"] != "completed":
-            raise SystemExit(f"Baseline run {state['status']}: {state.get('error')}")
+
+        def run_case(name, kind, edits=()):
+            """Create a scenario (with the case's edits), bind it to a case and wait for its run."""
+            scenario = ok(client.post(f"{api}/scenarios", json={"name": name, "base_view_id": view["view_id"]}))
+            if edits:
+                ok(client.post(f"{api}/scenarios/{scenario['id']}/revisions", json={
+                    "base_revision": 0, "expected_etag": scenario["etag"], "client_request_id": f"seed-{args.case}-{name}",
+                    "edits": [{"op": "set_property", "target": {"ontology_id": oid, "concrete_type": row["object_type"],
+                                                                "object_id": f"{oid[:8]}:{row['object_id']}"},
+                               "property": row["property"], "value": row["value"], "expected_old_value": row.get("expected_old_value"),
+                               "sequence": index}
+                              for index, row in enumerate(edits)]}))
+            case = ok(client.post(f"{api}/scenario-study-definitions/{study['id']}/cases",
+                                  json={"study_version": version["version"], "scenario_id": scenario["id"], "name": name, "case_kind": kind}))
+            ok(client.post(f"{api}/scenario-study-definitions/{study['id']}/cases/{case['id']}:compile"))
+            run = ok(client.post(f"{api}/scenario-study-definitions/{study['id']}/cases/{case['id']}/runs",
+                                 json={"expected_etag": case["etag"], "client_request_id": f"seed-{args.case}-{name}"}))
+            started = time.monotonic()
+            while True:
+                state = ok(client.get(f"{api}/scenario-study-runs/{run['id']}"))
+                if state["status"] in ("completed", "failed", "cancelled") or time.monotonic() - started > 300:
+                    break
+                time.sleep(1)
+            if state["status"] != "completed":
+                raise SystemExit(f"{name} run {state['status']}: {state.get('error')}")
+            return case, run, time.monotonic() - started
+
+        # What-if cases run first: an app source without a case shows the study's latest run, which is then the baseline.
+        case_ids = {}
+        for spec in pack["cases"]:
+            what_if, _, _ = run_case(spec["name"], "candidate", spec["edits"])
+            case_ids[spec["key"]] = what_if["id"]
+        case, run, run_seconds = run_case("Baseline", "baseline")
+        case_ids["baseline"] = case["id"]
 
         app_id = None
         if pack["app"]:
@@ -153,11 +175,14 @@ def main():
             for source in definition.get("data_sources", []):
                 if "study_id" in source:
                     source["study_id"] = study["id"]
+                if source.get("case"):
+                    source["case_id"] = case_ids[source.pop("case")]
             app = ok(client.post(f"{api}/workshop-apps", json={"name": definition.pop("name", meta["name"]),
                                                                 "description": meta["description"], "definition": definition}))
             app_id = app["id"]
         print(json.dumps({"case": args.case, "ontology": oid, "objects": objects, "links": links, "study": study["id"],
-                          "run": run["id"], "run_seconds": round(time.monotonic() - started, 2), "app": app_id}))
+                          "run": run["id"], "run_seconds": round(run_seconds, 2),
+                          "cases": sorted(case_ids), "app": app_id}))
         if app_id:
             print(f"Open /apps/workshop/{app_id}?ontology={oid}")
 

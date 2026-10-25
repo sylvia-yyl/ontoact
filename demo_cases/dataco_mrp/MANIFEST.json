@@ -1,30 +1,34 @@
 {
   "case": "dataco_mrp",
-  "objects": 943,
-  "links": 1138,
+  "objects": 1181,
+  "links": 1639,
   "sources": {
     "demand": "DataCo Smart Supply Chain (doi:10.17632/8gx2fvg2k6.5, CC BY 4.0), sha256 fa6d022ed437155e1a2f0378710602848703c8a7f203f7ff5d77805bf8480aa6",
-    "supply": "BOM, stock, POs, capacity, supplier disruption, quality hold (fixed rules, seed 20161003)"
+    "supply": "BOM with shared materials, stock, POs, line and flex capacity, supplier disruptions, quality hold (fixed rules, seed 20161003)"
   },
   "license": "Demand rows: CC BY 4.0 (DataCo Smart Supply Chain). Rule-generated supply: same terms as this repository.",
   "pack_version": 1,
   "exported": "2026-10-24",
   "files": {
     "app.json": {
-      "sha256": "5899a50c8bfdcfcee91837275caab1f6f8071bef68b81aaff4b285fafe8f59c5",
-      "bytes": 10492
+      "sha256": "7d60ce15c7526eede41d282b7bb05253a44cda8a1711822f5f9819ab14256109",
+      "bytes": 14391
+    },
+    "cases.json": {
+      "sha256": "ed51413ad19ac2f123236aea56056c9ee49a4d6d24d064b8a1e2da1ac813df95",
+      "bytes": 33128
     },
     "links.jsonl": {
-      "sha256": "d66691576e26ad1e3e0e054c30ee24daed49726ea852c978eb99b69f4cfd1291",
-      "bytes": 88935
+      "sha256": "27abb6dc33efb328fbc24b37aadde19403025854468e56d3d40c006c97678f54",
+      "bytes": 131832
     },
     "objects.jsonl": {
-      "sha256": "2c5556dd68042b9cb762be313ce7d3e8e3617c08c5dfc50d025ea67ea82e1cca",
-      "bytes": 203290
+      "sha256": "0c7c85a1b6a2e4c2924c5fce19a710681f6c89c997e996bef2fce1fe70a1bf68",
+      "bytes": 289996
     },
     "ontology.json": {
-      "sha256": "c150331cee12aaaaf8ed8de7da3dd3158e4f074f00966289b2c38967d23b286f",
-      "bytes": 7653
+      "sha256": "66490670df276b1f922f7b838ec018c4f8dcb6566e41a2b43f91e3427e4d30c9",
+      "bytes": 7728
     },
     "study.json": {
       "sha256": "538f31866780e097fc444ca73980ecae56f02d9fa37a8fbd5c9a39ca5e9bd641",

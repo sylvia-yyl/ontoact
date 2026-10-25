@@ -22,6 +22,8 @@ from math import ceil, floor
 from .material_shortage import EPSILON, _prepare, _simulate, _stable_digest, _time
 
 MAX_DEFER_WEEKS = 8
+REALLOCATE_WINDOW_DAYS = 28   # reallocation reorders orders due within the same four weeks
+MAX_IMPACT_NODES = 2000       # an impact graph larger than this is cut and marked incomplete
 
 
 def _rows(value):
@@ -74,11 +76,13 @@ class Plan:
     def policy_of(self, line, overrides):
         return self.policies[overrides.get(line) or self.lines[line]["policy"]]
 
-    def model_inputs(self, overrides=None, defer=None):
+    def model_inputs(self, overrides=None, defer=None, ranks=None):
         """Material-shortage inputs with each line's policy applied."""
         overrides, defer = overrides or {}, defer or {}
         raw = deepcopy(self.raw)
         for demand in raw["demands"]:
+            if ranks:
+                demand["allocation_rank"] = ranks[demand["id"]]
             policy = self.policy_of(demand["product_line"], overrides)
             demand["processing_days"] = float(demand["processing_days"]) / float(policy["capacity_factor"])
         risk_averse = {line for line in self.lines if self.policy_of(line, overrides).get("exclude_low_confidence")}
@@ -94,11 +98,133 @@ class Plan:
         return {key: raw[key] for key in ("scenario_time", "demands", "boms", "inventory", "reservations",
                                           "supply_commitments", "supply_options", "fixed_tasks")}
 
+    def density_ranks(self, part):
+        """Allocation ranks that reorder only the orders using ``part``.
+
+        Orders keep their usual place (due date, priority, id); the slots held by
+        orders that use the part are refilled, window by window, in descending
+        revenue per unit of the part.  Orders that do not use it keep their slot.
+        """
+        def need(row):
+            return self.leaves[row["item"]].get(part, 0.0) * float(row["quantity"])
+
+        ordered = sorted(self.raw["demands"], key=lambda row: (float(row["due_at"]), -float(row.get("priority", 0)), row["id"]))
+        slots = defaultdict(list)
+        for index, row in enumerate(ordered):
+            if need(row) > EPSILON:
+                slots[floor(float(row["due_at"]) / REALLOCATE_WINDOW_DAYS)].append(index)
+        for indexes in slots.values():
+            users = sorted((ordered[i] for i in indexes),
+                           key=lambda row: (-float(row.get("unit_revenue", 0)) * float(row["quantity"]) / need(row), float(row["due_at"]), row["id"]))
+            for index, row in zip(indexes, users):
+                ordered[index] = row
+        return {row["id"]: rank for rank, row in enumerate(ordered, start=1)}
+
+    def bom_path(self, top, part):
+        """Items from ``top`` down to ``part`` (first path in BOM order), or [] when ``top`` does not use it."""
+        if top == part:
+            return [top]
+        for child, _ in self.bom.get(top, []):
+            path = self.bom_path(child, part)
+            if path:
+                return [top] + path
+        return []
+
+    def impact_graph(self, base_result, base_events, result, events, actions):
+        """Objects a change touches: orders whose outcome moved, the parts behind them,
+        supply whose allocation moved, and the objects the actions edit.
+
+        Built from the two simulations only, so it works for any portfolio.
+        """
+        nodes, edges = {}, {}
+
+        def node(node_id, kind, label, change=None):
+            row = nodes.setdefault(node_id, {"id": node_id, "kind": kind, "label": label})
+            if change:
+                row["change"] = change
+            return node_id
+
+        def edge(source, target, kind):
+            edges.setdefault((source, target, kind), {"source": source, "target": target, "kind": kind})
+
+        def item(code):
+            return node(f"item:{code}", "Item", self.items.get(code, {}).get("name", code))
+
+        before = {row["demand_id"]: row for row in base_events}
+        changed = []
+        for row in events:
+            old = before[row["demand_id"]]
+            if row["status"] == old["status"] and row["delay_days"] == old["delay_days"]:
+                continue
+            better = row["status"] == "on_time" or (row["status"] == old["status"] and row["delay_days"] < old["delay_days"])
+            changed.append(row)
+            order = node(f"order:{row['demand_id']}", "CustomerOrder", row["demand_id"], "better" if better else "worse")
+            line = row["product_line"]
+            edge(order, node(f"line:{line}", "ProductLine", self.lines[line]["name"]), "FOR_PRODUCT_LINE")
+            top = item(row["item"])
+            edge(order, top, "ORDERS")
+            for part in sorted(set(row["root_cause_items"]) | set(old["root_cause_items"])):
+                path = self.bom_path(row["item"], part)
+                for parent, child in zip(path, path[1:]):
+                    edge(item(parent), item(child), "REQUIRES")
+
+        def allocated(res):
+            out = defaultdict(float)
+            for row in res["allocations"]:
+                out[(row["source_id"], row["item"])] += row["quantity"]
+            return out
+
+        old_alloc, new_alloc = allocated(base_result), allocated(result)
+        for key in sorted(set(old_alloc) | set(new_alloc)):
+            delta = new_alloc.get(key, 0.0) - old_alloc.get(key, 0.0)
+            if abs(delta) > EPSILON:
+                source, part = key
+                edge(node(f"supply:{source}", "Supply", source, "more" if delta > 0 else "less"), item(part), "SUPPLIES")
+
+        for action in actions:
+            if action.get("commitment_id"):
+                target = node(f"supply:{action['commitment_id']}", "Supply", action["commitment_id"], "action")
+            elif action.get("option_id"):
+                target = node(f"supply:{action['option_id']}", "Supply", action["option_id"], "action")
+            elif action.get("action_type") == "reassign_work_order":
+                resource = node(f"resource:{action['to_resource']}", "Resource", action["to_resource"], "action")
+                edge(f"order:{action['demand_id']}", resource, "MOVED_TO")
+                node(f"order:{action['demand_id']}", "CustomerOrder", action["demand_id"])
+                continue
+            elif action.get("product_line"):
+                nodes.setdefault(f"line:{action['product_line']}", {"id": f"line:{action['product_line']}", "kind": "ProductLine",
+                                                                    "label": self.lines[action["product_line"]]["name"]})["change"] = "action"
+                continue
+            elif action.get("item"):
+                nodes[item(action["item"])]["change"] = "action"
+                continue
+            else:
+                continue
+            if action.get("item"):
+                edge(target, item(action["item"]), "SUPPLIES")
+            elif action.get("commitment_id"):
+                commitment = next((row for row in self.raw["supply_commitments"] if row["id"] == action["commitment_id"]), None)
+                if commitment:
+                    edge(target, item(commitment["item"]), "SUPPLIES")
+
+        complete = len(nodes) <= MAX_IMPACT_NODES
+        kept = dict(sorted(nodes.items())[:MAX_IMPACT_NODES]) if not complete else nodes
+        return {"nodes": sorted(kept.values(), key=lambda row: row["id"]),
+                "edges": sorted((row for row in edges.values() if row["source"] in kept and row["target"] in kept),
+                                key=lambda row: (row["source"], row["target"], row["kind"])),
+                "summary": {"orders_changed": len(changed),
+                            "orders_better": sum(1 for row in nodes.values() if row["kind"] == "CustomerOrder" and row.get("change") == "better"),
+                            "orders_worse": sum(1 for row in nodes.values() if row["kind"] == "CustomerOrder" and row.get("change") == "worse"),
+                            "product_lines": len({row["product_line"] for row in changed}),
+                            "supply_moved": sum(1 for row in nodes.values() if row["kind"] == "Supply" and row.get("change") in ("more", "less")),
+                            "objects": len(nodes)},
+                "complete": complete}
+
     def day(self, iso):
         return (_time(iso, "time") - self.anchor).total_seconds() / 86400
 
-    def evaluate(self, overrides=None, sim_policy=None, defer=None):
-        prepared = _prepare(self.model_inputs(overrides, defer))
+    def evaluate(self, overrides=None, sim_policy=None, defer=None, ranks=None):
+        prepared = _prepare(self.model_inputs(overrides, defer, ranks))
         result = _simulate(prepared, sim_policy or {})
         overrides = overrides or {}
         events = []
@@ -245,8 +371,8 @@ def plan_portfolio(inputs: dict) -> dict:
     by_id = {row["demand_id"]: row for row in base_events}
     candidates = []
 
-    def candidate(cid, kind, label, line, actions, *, overrides=None, sim_policy=None, defer=None, extra=None):
-        result, events = plan.evaluate(overrides, sim_policy, defer)
+    def candidate(cid, kind, label, line, actions, *, overrides=None, sim_policy=None, defer=None, ranks=None, extra=None):
+        result, events = plan.evaluate(overrides, sim_policy, defer, ranks)
         portfolio = plan.portfolio(events, overrides)
         after = totals(portfolio)
         protected = [{"demand_id": row["demand_id"], "revenue": row["revenue"]} for row in events
@@ -260,6 +386,7 @@ def plan_portfolio(inputs: dict) -> dict:
                "quarter_revenue_after": after["projected_revenue"], "quarter_revenue_delta": round(after["projected_revenue"] - base_totals["projected_revenue"], 2),
                "quarter_cost_delta": round(after["cost"] - base_totals["cost"], 2), "otif_after": after["otif"],
                "at_risk_after": after["at_risk"], **(extra or {})}
+        row["impact"] = plan.impact_graph(base_result, base_events, result, events, actions)
         row["content_digest"] = _stable_digest(row)
         candidates.append(row)
         return row
@@ -287,6 +414,15 @@ def plan_portfolio(inputs: dict) -> dict:
             if not row["actions"][0]["quantity"]:
                 candidates.remove(row)
             row["content_digest"] = _stable_digest({k: v for k, v in row.items() if k != "content_digest"})
+    # 2b. A scarce part used by several lines goes, among orders due in the same window, to the
+    #     orders that earn most per unit of it.  Orders that lose it are reported as harmed.
+    for part in sorted({part for row in base_events for part in row["root_cause_items"] if len(plan.part_lines.get(part, ())) > 1}):
+        ranks = plan.density_ranks(part)
+        name = plan.items.get(part, {}).get("name", part)
+        candidate(f"reallocate:{part}", "reallocate", f"Allocate {name} by revenue per unit", "shared",
+                  [{"action_type": "reprioritize_allocation", "item": part, "policy": "revenue_per_unit_desc",
+                    "window_days": REALLOCATE_WINDOW_DAYS, "ranked_demands": sorted(ranks, key=ranks.get), "released_reservations": []}],
+                  ranks=ranks, extra={"item": part})
     # 3. Defer non-critical POs that would only arrive to wait (locked capital).
     for line in lines_at_risk:
         moves = _defer_moves(plan, deepcopy(coverage), base_events, line)

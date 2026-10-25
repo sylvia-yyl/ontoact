@@ -36,6 +36,7 @@ WIDGETS: dict[str, set[str]] = {
     "facet_list": {"field"}, "select": {"value_field", "label_field", "variable"}, "stat_row": {"items"}, "banner": {"template"},
     "action_list": {"label_field"}, "action_detail": {"variable"}, "rerun_button": {"steps"},
     "donut_chart": {"category_field"}, "rank_bars": {"label_field"}, "alert_list": {"title"}, "geo_map": {"lat_field", "lng_field"},
+    "impact_graph": {"variable"},
 }
 # Page template -> region id -> columns it spans (of 24).  Kept in sync with the frontend templates.
 TEMPLATES: dict[str, dict[str, int]] = {
@@ -56,6 +57,7 @@ class StudyRunSource(Strict):
     label: str = ""
     study_id: str
     node: str = Field(min_length=1, max_length=60)
+    case_id: str | None = None     # pin to one case's latest run; without it, the study's latest run
     time_field: str | None = Field(default=None, max_length=200)   # rows the app-wide time range applies to
 
 
@@ -428,6 +430,8 @@ def _resolve(db, ontology_id: str, app_id: str, source: dict, run: str | None, t
             raise http_error(exc) from exc
         return {"source_id": source["id"], **resolved}
     query = db.query(ScenarioRun).filter_by(study_id=source["study_id"])
+    if source.get("case_id"):
+        query = query.filter_by(case_id=source["case_id"])
     target = query.filter_by(id=run).first() if run else \
         query.filter_by(status="completed").order_by(ScenarioRun.completed_at.desc()).first()
     if not target:

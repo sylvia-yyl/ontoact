@@ -14,7 +14,7 @@ from app.services.v2.object_query.normalize import stable_hash
 OBJECT_TYPES = {
     "CustomerOrder": {"item": "string", "quantity": "double", "due_at": "double", "priority": "double", "unit_revenue": "double",
                       "processing_days": "double", "resource": "string", "alternate_resources": "array", "allocation_rank": "double",
-                      "product_line": "string", "customer": "string", "source_orders": "double"},
+                      "product_line": "string", "customer": "string", "segment": "string", "source_orders": "double"},
     "BOMLine": {"parent_item": "string", "component_item": "string", "quantity_per": "double"},
     "InventoryLot": {"item": "string", "location": "string", "quantity": "double"},
     "Reservation": {"item": "string", "demand_id": "string", "quantity": "double", "status": "string"},

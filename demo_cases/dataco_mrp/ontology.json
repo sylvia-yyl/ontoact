@@ -52,6 +52,10 @@
           "type": "string"
         },
         {
+          "id": "segment",
+          "type": "string"
+        },
+        {
           "id": "source_orders",
           "type": "double"
         }
