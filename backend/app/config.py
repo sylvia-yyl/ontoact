@@ -3,14 +3,11 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     environment: str = "development"  # development | production
-    # JWT by default; compose opts into ``local_single_user`` explicitly so a plain
-    # backend start never silently changes the security boundary.
-    auth_mode: str = "jwt"  # local_single_user | jwt
     database_url: str = "sqlite:///./ontoact.db"
+    # Signs data-plane payloads and query cursors.
     secret_key: str = ""
-    first_admin_user: str = "admin"
-    first_admin_password: str = ""
-    access_token_expire_minutes: int = 1440  # 24h
+    # There is no sign-in: every request acts as this built-in user.
+    workspace_user: str = "planner"
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
     # Host tests use 127.0.0.1:6381; Docker Compose uses falkordb:6379.
     falkordb_host: str = "falkordb"
@@ -21,9 +18,6 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-# Production refuses to start with default credentials.
-if settings.environment == "production":
-    _insecure = [name for name, value in (("SECRET_KEY", settings.secret_key),
-                                          ("FIRST_ADMIN_PASSWORD", settings.first_admin_password)) if not value]
-    if _insecure:
-        raise RuntimeError(f"ENVIRONMENT=production requires these settings: {', '.join(_insecure)}")
+# Production refuses to start without a signing key.
+if settings.environment == "production" and not settings.secret_key:
+    raise RuntimeError("ENVIRONMENT=production requires SECRET_KEY")

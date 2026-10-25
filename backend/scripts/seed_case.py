@@ -27,8 +27,6 @@ from app.database import SessionLocal  # noqa: E402
 from app.models.entity import Entity  # noqa: E402
 from app.models.entity_instance import EntityInstance  # noqa: E402
 from app.models.relation import Relation  # noqa: E402
-from app.models.user import User  # noqa: E402
-from app.services.auth_service import hash_password  # noqa: E402
 from app.services.v2.graph.falkordb_service import FalkorDBService  # noqa: E402
 
 CASES = Path(os.getenv("DEMO_CASES_DIR", Path(__file__).resolve().parents[2] / "demo_cases"))
@@ -54,14 +52,6 @@ def read_pack(case: str) -> dict:
             "objects": _jsonl(folder / "objects.jsonl"), "links": _jsonl(folder / "links.jsonl"),
             "study": json.loads((folder / "study.json").read_text(encoding="utf-8")),
             "app": json.loads(app_path.read_text(encoding="utf-8")) if app_path.exists() else None}
-
-
-def ensure_reviewer(username: str, password: str) -> None:
-    """Approvals need a second person: the creator of a package cannot approve it."""
-    with SessionLocal() as db:
-        if not db.query(User).filter_by(username=username).first():
-            db.add(User(username=username, email=f"{username}@ontoact.local", password_hash=hash_password(password), role="admin"))
-            db.commit()
 
 
 def load_objects(ontology_id: str, pack: dict) -> tuple[int, int]:
@@ -106,12 +96,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("case")
     parser.add_argument("--api", default=os.getenv("ONTOACT_API", "http://localhost:8000"))
-    parser.add_argument("--user", default=os.getenv("FIRST_ADMIN_USER", "planner"))
-    parser.add_argument("--password", default=os.getenv("FIRST_ADMIN_PASSWORD", ""))
-    parser.add_argument("--reviewer", default=os.getenv("REVIEWER_USER", "reviewer"))
     args = parser.parse_args()
     pack = read_pack(args.case)
-    ensure_reviewer(args.reviewer, os.getenv("REVIEWER_PASSWORD") or args.password)
 
     with httpx.Client(base_url=args.api, timeout=300) as client:
         def ok(response):
@@ -120,8 +106,6 @@ def main():
             body = response.json()
             return body.get("data", body) if isinstance(body, dict) and "data" in body else body
 
-        token = ok(client.post("/api/v1/auth/login", json={"username": args.user, "password": args.password}))["access_token"]
-        client.headers["Authorization"] = f"Bearer {token}"
         meta = pack["ontology"]
         body = {"name": meta["name"], "domain": meta["domain"], "description": meta["description"]}
         created = client.post("/api/v1/ontologies", json=body)

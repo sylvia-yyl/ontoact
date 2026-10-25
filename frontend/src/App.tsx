@@ -1,10 +1,8 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useAuthStore } from "@/stores/authStore";
 import Layout from "@/components/Layout";
 
-const LoginPage = React.lazy(() => import("@/pages/login/LoginPage"));
 const WorkshopListPage = React.lazy(() => import("@/pages/workshop/WorkshopListPage"));
 const WorkshopAppPage = React.lazy(() => import("@/pages/workshop/WorkshopAppPage"));
 const QueryLibraryPage = React.lazy(() => import("@/pages/queries/QueryLibraryPage"));
@@ -37,14 +35,6 @@ const qc = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
 });
 
-// VITE_AUTH_MODE=local_single_user skips sign-in for a one-person local setup.
-const LOCAL_SINGLE_USER = import.meta.env.VITE_AUTH_MODE === "local_single_user";
-
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const token = useAuthStore((s) => s.token);
-  return LOCAL_SINGLE_USER || token ? <Layout>{children}</Layout> : <Navigate to="/login" replace />;
-}
-
 export default function App() {
   return (
     <QueryClientProvider client={qc}>
@@ -52,12 +42,11 @@ export default function App() {
         <AppErrorBoundary>
           <React.Suspense fallback={<div className="p-6 text-sm text-slate-500">Loading…</div>}>
             <Routes>
-              <Route path="/login" element={LOCAL_SINGLE_USER ? <Navigate to="/ontology" replace /> : <LoginPage />} />
               <Route path="/" element={<Navigate to="/ontology" replace />} />
-              <Route path="/apps/workshop" element={<ProtectedRoute><WorkshopListPage /></ProtectedRoute>} />
-              <Route path="/apps/workshop/:appId" element={<ProtectedRoute><WorkshopAppPage /></ProtectedRoute>} />
-              <Route path="/apps/queries" element={<ProtectedRoute><QueryLibraryPage /></ProtectedRoute>} />
-              <Route path="/ontology" element={<ProtectedRoute><OntologyOverviewPage /></ProtectedRoute>} />
+              <Route path="/apps/workshop" element={<Layout><WorkshopListPage /></Layout>} />
+              <Route path="/apps/workshop/:appId" element={<Layout><WorkshopAppPage /></Layout>} />
+              <Route path="/apps/queries" element={<Layout><QueryLibraryPage /></Layout>} />
+              <Route path="/ontology" element={<Layout><OntologyOverviewPage /></Layout>} />
               <Route path="*" element={<Navigate to="/ontology" replace />} />
             </Routes>
           </React.Suspense>

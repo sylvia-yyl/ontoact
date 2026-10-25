@@ -1,4 +1,4 @@
-"""Decision packages: create from a run, review, apply, revert; plus grounded candidate explanations."""
+"""Decision packages: create from a run, apply, revert; plus grounded candidate explanations."""
 from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field, field_validator
@@ -65,7 +65,7 @@ class PackageCommandInput(BaseModel):
 class PackageTransitionInput(BaseModel):
     # Apply and revert are not plain transitions: they run through :apply / :revert,
     # which perform the Scenario merge, so a package cannot be marked applied by hand.
-    event: Literal["submit", "approve", "reject", "revise", "supersede"]
+    event: Literal["supersede"]
     expected_etag: int = Field(ge=1)
     request_id: str = Field(min_length=1, max_length=200)
     reason: str = Field(default="", max_length=4000)
@@ -80,7 +80,7 @@ def package_json(db, item):
     return {"id": item.id, "scenario_id": item.scenario_id, "scenario_revision": item.scenario_revision,
             "run_id": item.run_id, "title": item.title, "rationale": item.rationale, "status": item.status,
             "content_digest": item.content_digest, "preview_digest": item.preview_digest, "etag": item.etag,
-            "created_by": item.created_by, "reviewed_by": item.reviewed_by, "applied_decision_id": item.applied_decision_id,
+            "created_by": item.created_by, "applied_decision_id": item.applied_decision_id,
             "outbox": [{"id": row.id, "action_id": row.action_id, "delivered": row.delivered, "attempts": row.attempts} for row in outbox],
             "actions": [{"id": row.id, "sequence": row.sequence, "action_type_id": row.action_type_id,
                          "invocation": row.invocation, "expected_edits": row.expected_edits,

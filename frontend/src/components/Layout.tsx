@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { ChevronLeft, ChevronRight, LogOut, Network } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Network } from 'lucide-react'
 import { ontologyApi } from '@/api/ontologies'
-import { useAuthStore } from '@/stores/authStore'
 import { NAV_ENTRIES, ontologyIdFromUrl, readStoredOntology, urlForOntologySwitch, writeStoredOntology } from '@/components/navigation'
 
-const LOCAL_SINGLE_USER = import.meta.env.VITE_AUTH_MODE === 'local_single_user'
 const plural = (count: number, noun: string) => `${count} ${noun}${count === 1 ? '' : 's'}`
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const logout = useAuthStore(s => s.logout)
   const navigate = useNavigate()
   const location = useLocation()
   const [collapsed, setCollapsed] = useState(false)
@@ -25,7 +22,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const current = items.find(item => item.id === stored) ?? null
   const currentId = current?.id ?? (ontologies.data ? null : stored)
 
-  // A section opened without an ontology in the URL (sign-in, the logo, a bookmark) uses the last one chosen.
+  // A section opened without an ontology in the URL (the logo, a bookmark) uses the last one chosen.
   useEffect(() => {
     if (fromUrl || !currentId) return
     const entry = NAV_ENTRIES.find(row => location.pathname === row.path(null))
@@ -66,9 +63,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </nav>
 
         <div className="shrink-0 border-t border-white/10 p-3">
-          <button type="button" onClick={() => setCollapsed(value => !value)} className="flex w-full items-center justify-center rounded-lg py-1.5 text-slate-400 hover:bg-white/10 hover:text-white" aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}>{collapsed ? <ChevronRight size={17} /> : <ChevronLeft size={17} />}</button>
-          {!LOCAL_SINGLE_USER && <button type="button" onClick={() => { logout(); navigate('/login') }} className={`mt-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs text-slate-400 hover:bg-white/10 hover:text-white ${collapsed ? 'justify-center' : ''}`}><LogOut size={15} />{!collapsed && 'Sign out'}</button>}
-        </div>
+          <button type="button" onClick={() => setCollapsed(value => !value)} className="flex w-full items-center justify-center rounded-lg py-1.5 text-slate-400 hover:bg-white/10 hover:text-white" aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}>{collapsed ? <ChevronRight size={17} /> : <ChevronLeft size={17} />}</button>        </div>
       </aside>
 
       <main className={`min-h-screen min-w-0 transition-[padding] duration-200 ${collapsed ? 'pl-[72px]' : 'pl-[220px]'}`}>

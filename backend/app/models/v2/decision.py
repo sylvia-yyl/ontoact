@@ -40,11 +40,10 @@ class DecisionPackage(Base):
     preview_digest: Mapped[str | None] = mapped_column(String(64), nullable=True)
     etag: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     created_by: Mapped[str] = mapped_column(String, ForeignKey("users.id"), nullable=False)
-    reviewed_by: Mapped[str | None] = mapped_column(String, ForeignKey("users.id"), nullable=True)
     applied_decision_id: Mapped[str | None] = mapped_column(String, ForeignKey("v2_decisions.id"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=utcnow)
-    __table_args__ = (CheckConstraint("status IN ('draft','in_review','approved','rejected','applying','applied','apply_failed','reverted','superseded')", name="ck_decision_package_status"),)
+    __table_args__ = (CheckConstraint("status IN ('draft','applying','applied','apply_failed','reverted','superseded')", name="ck_decision_package_status"),)
 
 
 class DecisionPackageAction(Base):

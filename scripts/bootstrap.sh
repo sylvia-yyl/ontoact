@@ -11,11 +11,7 @@ cat > .env <<EOF
 POSTGRES_PASSWORD=$(secret 24)
 SECRET_KEY=$(secret 48)
 FUNCTION_RUNNER_TOKEN=$(secret 32)
-FIRST_ADMIN_USER=planner
-FIRST_ADMIN_PASSWORD=$(secret 12)
-REVIEWER_USER=reviewer
-REVIEWER_PASSWORD=$(secret 12)
 # Optional: enables the Explain button.
 OPENAI_API_KEY=
 EOF
-echo "Wrote .env. Sign-in passwords for planner and reviewer are in it."
+echo "Wrote .env."

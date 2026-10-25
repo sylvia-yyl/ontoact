@@ -1,13 +1,14 @@
-"""Decision Package digest and governance state transitions."""
+"""Decision Package digest and state transitions.
+
+There is no review step: a draft is applied directly. Apply still recompiles
+the edits and checks them against the draft's digest and scenario revision.
+"""
 from hashlib import sha256
 import json
 
 
 TRANSITIONS = {
-    "draft": {"submit": "in_review", "supersede": "superseded"},
-    "in_review": {"approve": "approved", "reject": "rejected", "supersede": "superseded"},
-    "rejected": {"revise": "draft", "supersede": "superseded"},
-    "approved": {"begin_apply": "applying", "supersede": "superseded"},
+    "draft": {"begin_apply": "applying", "supersede": "superseded"},
     "applying": {"apply_succeeded": "applied", "apply_failed": "apply_failed"},
     "apply_failed": {"retry_apply": "applying", "supersede": "superseded"},
     "applied": {"revert": "reverted"},
@@ -37,15 +38,11 @@ def transition(package, event: str, actor_id: str, *, expected_etag: int, reason
     target = TRANSITIONS.get(package.status, {}).get(event)
     if not target:
         raise DecisionPackageError("invalid_transition", f"Cannot {event} from {package.status}", 409)
-    if event in {"approve", "reject"} and actor_id == package.created_by:
-        raise DecisionPackageError("self_review_forbidden", "The package author cannot review their own package", 403)
-    if event in {"reject", "apply_failed"} and not reason.strip():
+    if event == "apply_failed" and not reason.strip():
         raise DecisionPackageError("reason_required", "A reason is required", 422)
     before = package.content_digest
     package.status = target
     package.etag += 1
-    if event in {"approve", "reject"}:
-        package.reviewed_by = actor_id
     return before, target
 
 
@@ -181,7 +178,7 @@ def package_candidate_id(db, package) -> str:
 
 
 def apply_package(db, package, user, *, expected_etag: int, request_id: str, connector=None) -> dict:
-    """Stage, merge and record one approved package; returns the outbox delivery summary."""
+    """Stage, merge and record one draft package; returns the outbox delivery summary."""
     from app.models.v2.decision import DecisionOutbox, DecisionPackageAction, DecisionPackageEvent, DecisionRecord
     from app.models.v2.scenario import ScenarioChangeSet, ScenarioResource, ScenarioRun
     from app.routers.v2.scenario_workbench import merge_head
@@ -190,26 +187,26 @@ def apply_package(db, package, user, *, expected_etag: int, request_id: str, con
 
     if db.query(DecisionPackageEvent).filter_by(package_id=package.id, request_id=request_id).first():
         return deliver_outbox(db, package, connector)
-    if package.status not in {"approved", "apply_failed"}:
+    if package.status not in {"draft", "apply_failed"}:
         raise DecisionPackageError("invalid_transition", f"Cannot apply from {package.status}", 409)
     if package.etag != expected_etag:
         raise DecisionPackageError("stale_etag", "Decision package changed; reload before retrying", 409)
     scenario = db.get(ScenarioResource, package.scenario_id)
     staged_id = f"package:{package.id}"
-    # A failed earlier attempt may already have staged our revision on top of the reviewed one.
+    # A failed earlier attempt may already have staged our revision on top of the package's one.
     staged = scenario is not None and scenario.head_revision == package.scenario_revision + 1 and \
         db.query(ScenarioChangeSet).filter_by(scenario_id=scenario.id, client_request_id=staged_id).first() is not None
     if not scenario or (scenario.head_revision != package.scenario_revision and not staged):
-        raise DecisionPackageError("stale_scenario_revision", "Scenario revision changed after review", 409)
+        raise DecisionPackageError("stale_scenario_revision", "Scenario revision changed after the package was created", 409)
 
     run = db.get(ScenarioRun, package.run_id)
     candidate_id = package_candidate_id(db, package)
     actions, _, _ = compile_package_actions(db, run, package.ontology_id, candidate_id, user)
     if stable_digest([row["expected_edits"] for row in actions]) != package.preview_digest:
-        raise DecisionPackageError("preview_digest_mismatch", "Recompiled edits differ from the reviewed preview", 409)
+        raise DecisionPackageError("preview_digest_mismatch", "Recompiled edits differ from the package preview", 409)
 
     before_digest = package.content_digest
-    transition(package, "begin_apply" if package.status == "approved" else "retry_apply", user.id, expected_etag=expected_etag)
+    transition(package, "begin_apply" if package.status == "draft" else "retry_apply", user.id, expected_etag=expected_etag)
     _event(db, package, "begin_apply", user.id, f"{request_id}:begin", before=before_digest)
     db.commit()
 

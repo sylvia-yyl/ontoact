@@ -40,10 +40,6 @@ services:
     environment:
       DATABASE_URL: postgresql://ontoact:${POSTGRES_PASSWORD}@db:5432/ontoact
       SECRET_KEY: ${SECRET_KEY:?run scripts/bootstrap.sh first}
-      FIRST_ADMIN_USER: ${FIRST_ADMIN_USER:-planner}
-      FIRST_ADMIN_PASSWORD: ${FIRST_ADMIN_PASSWORD:?run scripts/bootstrap.sh first}
-      REVIEWER_USER: ${REVIEWER_USER:-reviewer}
-      REVIEWER_PASSWORD: ${REVIEWER_PASSWORD:-}
       FALKORDB_HOST: falkordb
       FALKORDB_PORT: 6379
       FUNCTION_RUNNER_URL: http://function-runner:8100
