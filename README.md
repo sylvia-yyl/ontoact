@@ -155,11 +155,3 @@ The script checks the file's SHA-256 first. `--variant independent` builds the e
 | Graph projection for traversal | FalkorDB |
 | User Functions | Separate `function-runner` container on an internal network, read-only, no capabilities |
 | Agent access | MCP Python SDK, streamable HTTP |
-
-## Limitations and next steps
-
-- Supply-side data is rule-derived; only demand is real.
-- Supplier capacity and transfers between plants are not modelled: expediting a PO does not delay that supplier's other POs.
-- Study runs execute on an in-process thread pool. A run interrupted by a restart is marked failed and can be retried; for production, swap in a task queue.
-- The app runs as a single workspace user with no sign-in.
-- Next: question answering over the graph that cites the objects it used, with import and mapping built on [Semantica](https://github.com/Hawksight-AI/semantica).
