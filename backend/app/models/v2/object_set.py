@@ -12,7 +12,7 @@ def now():
 class ObjectSetResource(Base):
     __tablename__ = 'v2_object_set_resources'
     id = Column(String(36), primary_key=True, default=lambda: str(uuid4()))
-    ontology_id = Column(String, ForeignKey('ontology_projects.id'), nullable=False, index=True)
+    ontology_id = Column(String, ForeignKey('ontology_projects.id', ondelete='CASCADE'), nullable=False, index=True)
     owner_id = Column(String, ForeignKey('users.id'), nullable=False, index=True)
     name = Column(String(200), nullable=False)
     description = Column(Text, nullable=False, default='')
@@ -33,7 +33,7 @@ class ObjectSetResource(Base):
 
 class ObjectSetVersion(Base):
     __tablename__ = 'v2_object_set_versions'
-    resource_id = Column(String(36), ForeignKey('v2_object_set_resources.id'), primary_key=True)
+    resource_id = Column(String(36), ForeignKey('v2_object_set_resources.id', ondelete='CASCADE'), primary_key=True)
     version = Column(Integer, primary_key=True)
     contract_version = Column(String(30), nullable=False, default='contract_v2')
     definition = Column(JSON, nullable=False)
@@ -51,12 +51,12 @@ class ObjectSetStaticMember(Base):
     version = Column(Integer, primary_key=True)
     concrete_type = Column(String(200), primary_key=True)
     object_id = Column(String(300), primary_key=True)
-    __table_args__ = (ForeignKeyConstraint(['resource_id', 'version'], ['v2_object_set_versions.resource_id', 'v2_object_set_versions.version']),)
+    __table_args__ = (ForeignKeyConstraint(['resource_id', 'version'], ['v2_object_set_versions.resource_id', 'v2_object_set_versions.version'], ondelete='CASCADE'),)
 
 
 class ObjectSetGrant(Base):
     __tablename__ = 'v2_object_set_grants'
-    resource_id = Column(String(36), ForeignKey('v2_object_set_resources.id'), primary_key=True)
+    resource_id = Column(String(36), ForeignKey('v2_object_set_resources.id', ondelete='CASCADE'), primary_key=True)
     principal_id = Column(String, ForeignKey('users.id'), primary_key=True)
     role = Column(String(10), nullable=False)
     __table_args__ = (CheckConstraint("role IN ('view','edit')", name='ck_object_set_grant_role'),)
@@ -65,7 +65,7 @@ class ObjectSetGrant(Base):
 class ObjectSetAudit(Base):
     __tablename__ = 'v2_object_set_audits'
     id = Column(String(36), primary_key=True, default=lambda: str(uuid4()))
-    resource_id = Column(String(36), ForeignKey('v2_object_set_resources.id'), nullable=False, index=True)
+    resource_id = Column(String(36), ForeignKey('v2_object_set_resources.id', ondelete='CASCADE'), nullable=False, index=True)
     version = Column(Integer, nullable=False)
     actor_id = Column(String, nullable=False)
     operation = Column(String(40), nullable=False)
@@ -81,8 +81,8 @@ class ObjectSetDependency(Base):
     target_id = Column(String(36), primary_key=True)
     target_version = Column(Integer, primary_key=True)
     __table_args__ = (
-        ForeignKeyConstraint(['resource_id', 'version'], ['v2_object_set_versions.resource_id', 'v2_object_set_versions.version']),
-        ForeignKeyConstraint(['target_id', 'target_version'], ['v2_object_set_versions.resource_id', 'v2_object_set_versions.version']),
+        ForeignKeyConstraint(['resource_id', 'version'], ['v2_object_set_versions.resource_id', 'v2_object_set_versions.version'], ondelete='CASCADE'),
+        ForeignKeyConstraint(['target_id', 'target_version'], ['v2_object_set_versions.resource_id', 'v2_object_set_versions.version'], ondelete='CASCADE'),
     )
 
 
@@ -94,7 +94,7 @@ class ObjectSetLease(Base):
     principal_id = Column(String, ForeignKey('users.id'), nullable=False)
     manifest = Column(JSON, nullable=False)
     expires_at = Column(DateTime(timezone=True), nullable=False, index=True)
-    __table_args__ = (ForeignKeyConstraint(['resource_id', 'version'], ['v2_object_set_versions.resource_id', 'v2_object_set_versions.version']),)
+    __table_args__ = (ForeignKeyConstraint(['resource_id', 'version'], ['v2_object_set_versions.resource_id', 'v2_object_set_versions.version'], ondelete='CASCADE'),)
 
 
 @event.listens_for(ObjectSetVersion, 'before_update')

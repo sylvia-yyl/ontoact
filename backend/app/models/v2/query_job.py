@@ -10,7 +10,7 @@ def utcnow():
 class QueryJob(Base):
     __tablename__ = "v2_query_jobs"
     id = Column(String(64), primary_key=True, default=lambda: f"job_{uuid4().hex}")
-    ontology_id = Column(String, ForeignKey("ontology_projects.id"), nullable=False, index=True)
+    ontology_id = Column(String, ForeignKey("ontology_projects.id", ondelete="CASCADE"), nullable=False, index=True)
     created_by = Column(String, ForeignKey("users.id"), nullable=False)
     kind = Column(String(30), nullable=False, default="materialize")
     status = Column(String(20), nullable=False, default="queued")

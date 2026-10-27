@@ -98,6 +98,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("case")
     parser.add_argument("--api", default=os.getenv("ONTOACT_API", "http://localhost:8000"))
+    parser.add_argument("--new-copy", action="store_true", help="create a timestamped copy when this case already exists")
     args = parser.parse_args()
     pack = read_pack(args.case)
 
@@ -111,7 +112,11 @@ def main():
         meta = pack["ontology"]
         body = {"name": meta["name"], "domain": meta["domain"], "description": meta["description"]}
         created = client.post("/api/v1/ontologies", json=body)
-        if created.status_code == 409:  # names are unique; a re-seed gets its own ontology
+        if created.status_code == 409 and not args.new_copy:
+            detail = created.json().get("detail", {})
+            existing_id = detail.get("existing_id", "unknown") if isinstance(detail, dict) else "unknown"
+            raise SystemExit(f"{meta['name']} is already loaded as ontology {existing_id}; use --new-copy to create another copy")
+        if created.status_code == 409:
             created = client.post("/api/v1/ontologies", json={**body, "name": f"{meta['name']} ({datetime.now():%Y-%m-%d %H:%M:%S})"})
         oid = ok(created)["id"]
         objects, links = load_objects(oid, pack)

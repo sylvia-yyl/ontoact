@@ -8,8 +8,8 @@ from app.database import Base
 class TimeSeriesSync(Base):
     __tablename__ = 'v2_time_series_syncs'
     id = Column(String(64), primary_key=True, default=lambda: str(uuid4()))
-    ontology_id = Column(String, ForeignKey('ontology_projects.id'), nullable=False)
-    data_view_id = Column(String(64), ForeignKey('v2_query_data_views.id'), nullable=False)
+    ontology_id = Column(String, ForeignKey('ontology_projects.id', ondelete='CASCADE'), nullable=False)
+    data_view_id = Column(String(64), ForeignKey('v2_query_data_views.id', ondelete='CASCADE'), nullable=False)
     series_id = Column(String(200), nullable=False)
     root_type = Column(String(200), nullable=False)
     root_id = Column(String(300), nullable=False)

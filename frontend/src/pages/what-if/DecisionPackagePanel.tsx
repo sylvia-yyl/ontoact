@@ -10,7 +10,7 @@ const eventLabel: Record<string, string> = { created: 'Created', begin_apply: 'A
 const packageStatus: Record<string, string> = { draft: 'Draft', applying: 'Applying', applied: 'Applied', apply_failed: 'Apply failed', reverted: 'Reverted', superseded: 'Superseded' }
 
 export default function DecisionPackagePanel({ context, candidate, actionLabel = {} }: { context?: DecisionRunContext; candidate: { id: string; applicable: boolean }; actionLabel?: Record<string, string> }) {
-  const { pkg, setPkg } = useRunPackage(context)
+  const { pkg, setPkg, candidateId } = useRunPackage(context)
   const [rationale, setRationale] = useState('')
   const [delivery, setDelivery] = useState<Delivery | null>(null)
   const packagesUrl = `/ontologies/${context?.ontologyId}/decision-packages`
@@ -27,6 +27,11 @@ export default function DecisionPackagePanel({ context, candidate, actionLabel =
   const error = createPackage.error || command.error
   const edits = pkg?.actions.flatMap(action => action.expected_edits.filter(edit => edit.op !== 'invoke_action').map(edit => ({ action, edit }))) ?? []
   const label = (key: string) => actionLabel[key] ?? humanize(key)
+
+  if (pkg && candidateId && candidateId !== candidate.id) return <>
+    <p role="status" className="candidate-warning">This run already has an active decision package for another action. Select that action to review, apply, or revert it.</p>
+    <p className="candidate-note">Only one active decision package is shown for a run, so controls for it are never displayed under a different action.</p>
+  </>
 
   return <>
     {!pkg ? <>

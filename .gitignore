@@ -1,4 +1,5 @@
 .env
+README.zh-CN.md
 __pycache__/
 *.pyc
 *.db

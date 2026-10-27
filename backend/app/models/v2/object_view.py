@@ -10,7 +10,7 @@ from app.database import Base
 class ObjectViewConfiguration(Base):
     __tablename__ = "v2_object_view_configs"
     id = Column(String(64), primary_key=True, default=lambda: str(uuid4()))
-    ontology_id = Column(String, ForeignKey("ontology_projects.id"), nullable=False)
+    ontology_id = Column(String, ForeignKey("ontology_projects.id", ondelete="CASCADE"), nullable=False)
     object_type = Column(String(200), nullable=False)
     version = Column(Integer, nullable=False)
     metadata_digest = Column(String(64), nullable=False)

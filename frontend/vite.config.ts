@@ -7,7 +7,7 @@ const apiTarget = process.env.VITE_API_PROXY_TARGET || 'http://localhost:8000'
 
 export default defineConfig({
   plugins: [react()],
-  resolve: { alias: { '@': path.resolve(__dirname, './src') } },
+  resolve: { alias: { '@': path.resolve(import.meta.dirname, './src') } },
   // "frontend" is the Compose service name, used by the end-to-end tests.
   server: { host: true, port: 5173, allowedHosts: ['localhost', 'frontend'], proxy: { '/api': apiTarget } },
 })

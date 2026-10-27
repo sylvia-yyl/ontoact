@@ -11,6 +11,7 @@
     "lint": "npm run lint:src && npm run lint:scripts",
     "test:e2e:preflight": "node scripts/playwright-preflight.mjs",
     "test:e2e": "playwright test",
+    "test:interaction-smoke": "node scripts/interaction-smoke.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -18,7 +19,7 @@
     "@tanstack/react-table": "9.2.4",
     "@types/cytoscape": "^3.21.9",
     "@xyflow/react": "^12.11.0",
-    "axios": "^1.16.1",
+    "axios": "^1.20.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cytoscape": "^3.33.3",
@@ -30,7 +31,7 @@
     "react-grid-layout": "2.2.4",
     "react-hook-form": "^7.76.0",
     "react-querybuilder": "8.24.3",
-    "react-router-dom": "^7.15.1",
+    "react-router-dom": "^7.18.2",
     "tailwind-merge": "^3.6.0",
     "topojson-client": "3.1.0",
     "world-atlas": "2.0.2",

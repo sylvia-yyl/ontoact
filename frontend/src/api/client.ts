@@ -49,12 +49,16 @@ function createApiClient(baseURL: string): ApiClient {
       return Promise.reject(payload ? { ...payload, status } : err)
     }
   )
+  // The success interceptor above unwraps AxiosResponse at runtime. Axios 2's
+  // public types intentionally keep the original response type, so centralize
+  // that boundary instead of leaking casts through every API call site.
+  const data = <T>(request: Promise<unknown>) => request as Promise<T>
   return {
-    get: <T>(url: string, config?: AxiosRequestConfig) => client.get<T, T>(url, config),
-    post: <T>(url: string, data?: unknown, config?: AxiosRequestConfig) => client.post<T, T>(url, data, config),
-    put: <T>(url: string, data?: unknown, config?: AxiosRequestConfig) => client.put<T, T>(url, data, config),
-    patch: <T>(url: string, data?: unknown, config?: AxiosRequestConfig) => client.patch<T, T>(url, data, config),
-    delete: <T>(url: string, config?: AxiosRequestConfig) => client.delete<T, T>(url, config),
+    get: <T>(url: string, config?: AxiosRequestConfig) => data<T>(client.get(url, config)),
+    post: <T>(url: string, body?: unknown, config?: AxiosRequestConfig) => data<T>(client.post(url, body, config)),
+    put: <T>(url: string, body?: unknown, config?: AxiosRequestConfig) => data<T>(client.put(url, body, config)),
+    patch: <T>(url: string, body?: unknown, config?: AxiosRequestConfig) => data<T>(client.patch(url, body, config)),
+    delete: <T>(url: string, config?: AxiosRequestConfig) => data<T>(client.delete(url, config)),
   }
 }
 

@@ -1,10 +1,50 @@
 # OntoAct
 
-**From ontology to reviewed actions.** OntoAct models operational data as an ontology of business objects. It simulates what each possible action would do across every object it touches, explains the result with numbers checked against the simulation, and writes the chosen action back as reviewed, revertible Ontology edits.
+**A self-hosted framework for turning operational data into simulated, reviewed and reversible actions.** Model the things your organization operates as typed objects and links, run your own decision logic over a pinned data version, compare the impact of candidate actions, and apply the selected action through an auditable Decision Package.
 
-The bundled case is quarterly production planning on **31,418 real customer order lines** from the [DataCo Smart Supply Chain](https://doi.org/10.17632/8gx2fvg2k6.5) dataset. Five product lines share materials, suppliers and a flex line, so a fix for one line can help or hurt another, and the planner shows which.
+OntoAct is not tied to manufacturing or to an LLM. The reusable platform provides the object graph, versioned scenarios, Function execution, candidate comparison, configurable apps, evidence-linked explanations, typed write-back, audit and revert. Your domain supplies the object types, data, decision Function and allowed actions.
+
+```text
+Your objects + links
+        ↓
+Your deterministic or model-backed decision Function
+        ↓
+Candidate actions, each evaluated against the same pinned scenario
+        ↓
+Configurable decision app → reviewed edits → apply → audit → revert
+```
+
+The repository includes two deliberately different examples: quarterly production planning over **31,418 real customer order lines**, and container scheduling driven by a user-supplied Python Function. They use the same runtime and UI components but different ontologies, logic and page configurations.
 
 ![Suggested actions with the impact of reallocating steel across three product lines](docs/images/04-tradeoff.png)
+
+## Bring your own data and decisions
+
+A domain is a folder in `demo_cases/<case>/`; it is a portable contract rather than application code:
+
+| You provide | Purpose | Replace without changing the platform |
+|---|---|---|
+| `ontology.json` | Object types, properties and links | Products and orders can become vessels and jobs, patients and resources, or any other business objects |
+| `objects.jsonl` and `links.jsonl` | Your operational data | Export from a database, warehouse or existing system into the documented pack format |
+| `study.json` | Inputs, decision Function and allowed action types | Use the built-in planning Function or ship your own isolated Python Function |
+| `app.json` | Pages, widgets, bindings and navigation | Build a domain-specific app from standard widgets without adding frontend code |
+| `cases.json` (optional) | Reproducible what-if scenarios | Encode disruptions, policy changes or alternative assumptions |
+
+Fork the repository, copy either bundled case, replace these files, and load it with:
+
+```sh
+docker compose exec backend python scripts/seed_case.py <your-case>
+```
+
+The current repository intentionally starts at the case-pack boundary. It does not yet include a catalog of ready-made SAP, Snowflake or SaaS connectors; teams either export JSON/JSONL packs or integrate through the object APIs. The platform above that boundary is domain-independent.
+
+### What stays generic
+
+- **Ontology and data plane:** typed objects, links, graph traversal, object queries and pinned data views.
+- **Decision runtime:** versioned studies and scenarios, built-in or user-supplied Functions, and isolated Function execution.
+- **Action lifecycle:** candidate comparison, typed edits, optimistic version checks, idempotent commands, audit records and revert.
+- **Application layer:** pages and widgets are defined by configuration and bound to run outputs.
+- **Agent access:** scoped Ontology queries are exposed over MCP; the core simulation and write-back flow does not require an LLM.
 
 ## What it answers
 
@@ -109,6 +149,13 @@ docker compose exec backend python scripts/seed_case.py container_scheduling
 ```
 
 Open http://localhost:5173. The seed script prints the app URL; the API is at http://localhost:8000.
+Re-running a case is safe: the seed script stops if that case is already present. Pass `--new-copy` only when you intentionally want a separate timestamped copy.
+
+If either port is already in use, choose free host ports without editing the Compose file:
+
+```sh
+BACKEND_PORT=18000 FRONTEND_PORT=15174 docker compose up -d --build
+```
 
 Explanations need an OpenAI-compatible API: set `OPENAI_API_KEY` (and optionally `OPENAI_BASE_URL`, `EXPLANATION_MODEL`) in `.env` and restart the backend. Everything else works without it.
 
@@ -120,6 +167,7 @@ The API serves Ontology queries as tools over the Model Context Protocol (stream
 
 ```sh
 cd backend && pytest tests -q          # 170 tests, about 15 seconds, no database needed
+cd frontend && npm ci && npm run lint && npm run build
 ```
 
 | Suite | What it checks |
@@ -129,6 +177,13 @@ cd backend && pytest tests -q          # 170 tests, about 15 seconds, no databas
 | `test_dataco_pack.py` | Every number quoted in this README, recomputed from the committed pack, including the outage case |
 
 GitHub Actions (`.github/workflows/ci.yml`) runs ruff and the tests for the backend, and lint, type-check and build for the frontend. `frontend/scripts/readme-screenshots.mjs` regenerates the screenshots above with Playwright.
+
+With the stack running and a seeded app, the interaction smoke test deliberately visits pages out of order, combines global controls, selects actions in reverse order, reloads repeatedly, and exercises a reversible decision package:
+
+```sh
+cd frontend
+BASE_URL=http://localhost:5173 npm run test:interaction-smoke -- <ontology-id> <app-id>
+```
 
 ## Data
 
@@ -155,3 +210,7 @@ The script checks the file's SHA-256 first. `--variant independent` builds the e
 | Graph projection for traversal | FalkorDB |
 | User Functions | Separate `function-runner` container on an internal network, read-only, no capabilities |
 | Agent access | MCP Python SDK, streamable HTTP |
+
+## License
+
+[MIT](LICENSE)
