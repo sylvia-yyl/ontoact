@@ -1,20 +1,57 @@
-# OntoAct
+<p align="center"><img src="frontend/public/logo.svg" width="88" alt="OntoAct logo"></p>
+<h1 align="center">OntoAct</h1>
+<p align="center"><strong>Decision infrastructure for AI agents that need to act, not just answer.</strong></p>
+<p align="center">Typed operational context · Counterfactual simulation · Governed write-back</p>
 
-**A self-hosted framework for turning operational data into simulated, reviewed and reversible actions.** Model the things your organization operates as typed objects and links, run your own decision logic over a pinned data version, compare the impact of candidate actions, and apply the selected action through an auditable Decision Package.
+<p align="center">
+  <a href="https://github.com/sylvia-yyl/ontoact-coupled/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/sylvia-yyl/ontoact-coupled/ci.yml?label=CI" alt="CI status"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-2563EB" alt="MIT license"></a>
+  <img src="https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white" alt="Python 3.12">
+  <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=111827" alt="React 19">
+  <img src="https://img.shields.io/badge/MCP-streamable_HTTP-7C3AED" alt="MCP streamable HTTP">
+  <a href="https://github.com/sylvia-yyl/ontoact-coupled/stargazers"><img src="https://img.shields.io/github/stars/sylvia-yyl/ontoact-coupled?style=flat&color=2563EB" alt="GitHub stars"></a>
+</p>
 
-OntoAct is not tied to manufacturing or to an LLM. The reusable platform provides the object graph, versioned scenarios, Function execution, candidate comparison, configurable apps, evidence-linked explanations, typed write-back, audit and revert. Your domain supplies the object types, data, decision Function and allowed actions.
+<p align="center">
+  <a href="#why-agents-need-more-than-rag">Why OntoAct</a> ·
+  <a href="#bring-your-own-data-and-decisions">Bring your data</a> ·
+  <a href="#walkthrough">Walkthrough</a> ·
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#tests">Verification</a>
+</p>
 
-```text
-Your objects + links
-        ↓
-Your deterministic or model-backed decision Function
-        ↓
-Candidate actions, each evaluated against the same pinned scenario
-        ↓
-Configurable decision app → reviewed edits → apply → audit → revert
+OntoAct gives an agent a typed, connected model of an operational world; lets it evaluate actions against a pinned scenario; and turns the selected action into reviewed, auditable and reversible writes.
+
+| 🧠 Structured context | 🧪 Counterfactuals | 🛡️ Governed actions | 🔌 Agent-native | ↩️ Reversible |
+|---|---|---|---|---|
+| Objects, links and permissions | Re-run logic under changed assumptions | Typed edits with version checks | Scoped tools over MCP | Audit every change and restore it |
+
+## Why agents need more than RAG
+
+RAG is useful for finding passages that may answer *what is true*. Operational agents also need to answer *what will happen if I do this?*, *what else will change?*, and *is it still safe to apply?* Those questions require relationships, constraints, simulation and transaction semantics—not another generated paragraph.
+
+| A retrieval-only agent often has | OntoAct adds |
+|---|---|
+| Chunks that mention orders, parts and suppliers | Typed business objects connected by explicit links |
+| Context assembled at request time | A version-pinned data view and reproducible scenario |
+| An LLM-generated recommendation | Candidate actions evaluated by deterministic or user-supplied Functions |
+| A textual answer with no executable contract | Typed Ontology edits with optimistic version checks |
+| No safe boundary between recommendation and action | Human review, idempotent apply, audit history and revert |
+
+```mermaid
+flowchart LR
+    A[AI agent or decision app] -->|Scoped MCP tools / API| B[Ontology<br/>typed objects · links · permissions]
+    B --> C[Versioned scenario<br/>pinned data · changed assumptions]
+    C --> D[Decision Function<br/>deterministic or model-backed]
+    D --> E[Evaluated candidates<br/>impact graph · evidence]
+    E -->|Human review| F[Decision Package]
+    F --> G[Typed edits]
+    G --> H[Apply · audit · revert]
 ```
 
-The repository includes two deliberately different examples: quarterly production planning over **31,418 real customer order lines**, and container scheduling driven by a user-supplied Python Function. They use the same runtime and UI components but different ontologies, logic and page configurations.
+The LLM is deliberately not the source of truth. It can explain a candidate using cited evidence, while the numbers come from re-running the decision Function and the final write is guarded by version checks. The simulation, action lifecycle and MCP access all work without an LLM key.
+
+OntoAct is not tied to manufacturing. The repository includes two deliberately different examples: quarterly production planning over **31,418 real customer order lines**, and container scheduling driven by a user-supplied Python Function. They share the same object, scenario, action and application runtimes while using different ontologies, logic and page configurations.
 
 ![Suggested actions with the impact of reallocating steel across three product lines](docs/images/04-tradeoff.png)
 
